@@ -46,6 +46,9 @@ router.get("/products", async (req, res) => {
 });
 
 router.get("/products/:pid", async (req, res) => {
+  if(!req.session.user){
+    return res.redirect('/api/login')
+}
   try {
     const {
       params: { pid },

@@ -26,6 +26,10 @@
   }),
   }));
 
+  app.get('/', (req, res) => {
+    res.redirect('/api/login');
+  });
+
 
   const createAdminUser = async () => {
     try {

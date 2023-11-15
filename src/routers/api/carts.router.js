@@ -13,11 +13,17 @@ router.post("/carts", async (req, res) => {
 });
 
 router.get("/carts", async (req, res) => {
+  if(!req.session.user){
+    return res.redirect('/api/login')
+}
    await CartsManagerMongo.get();
   res.status(200).json();
 });
 
 router.get("/carts/:cid", async (req, res) => {
+  if(!req.session.user){
+    return res.redirect('/api/login')
+}
   try {
     const { params: { cid } } = req;
     const cart = await CartsManagerMongo.getById(cid);
