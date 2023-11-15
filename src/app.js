@@ -40,7 +40,7 @@
           first_name: 'ADMIN',
           last_name: 'ADMIN',
           email: 'adminCoder@coder.com',
-          password: 'adminCod3r123', // Recuerda utilizar un método seguro para almacenar contraseñas en producción
+          password: 'adminCod3r123', 
           role: 'ADMIN'
         });
   
