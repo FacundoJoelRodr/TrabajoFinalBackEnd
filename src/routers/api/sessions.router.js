@@ -1,50 +1,58 @@
-import {Router} from 'express';
-import UserModel from '../../models/user.model.js'
+import { Router } from "express";
+import passport from "passport";
+import { createHash, isValidPassword } from "../../utils.js";
+import UserModel from "../../models/user.model.js";
 
 const router = Router();
 
+router.post("/register", passport.authenticate("register", { failureRedirect: "/register" }),
+  (req, res) => {
+    res.redirect("/api/login");
+  }
+);
 
-router.post('/login', async (req,res)=>{
-    if(req.session.user){
-        return res.redirect('/api/products')
-    }
-    const {body: {email, password}} = req
-    const user = await UserModel.findOne({email});
-    if(!user){
-        return res.status(401).send("Email o contraseña incorrecto")
-    }
-    const isPassValid = user.password === password;
-    if(!isPassValid){
-        return res.status(401).send("Email o contraseña incorrecto")
-    }
+router.post("/login",passport.authenticate("login", { failureRedirect: "/login" }),
+  (req, res) => {
+    req.session.user = req.user;
+    res.redirect("/api/products");
+  }
+);
 
-    const {first_name, last_name,role } = user;
-    req.session.user = {first_name, last_name, email,role};
-    res.redirect('/api/products')
+
+router.get('/github', passport.authenticate('github', {scope: ['user:email'] }))
+
+router.get('/github/callback',passport.authenticate('github',{ failureRedirect: "/login" }), 
+(req, res)=>{
+req.session.user = req.user;
+res.redirect("/api/products")
 })
 
+router.post("/recovery-password", async (req, res) => {
+  const {
+    body: { email, newPassword },
+  } = req;
+  const user = await UserModel.findOne({ email });
+  console.log(user, "user");
+  console.log(newPassword, "user111");
+  if (!user) {
+    return res.status(401).send("Email o contraseña incorrecto");
+  }
 
+  await UserModel.updateOne(
+    { email },
+    { $set: { password: createHash(newPassword) } }
+  );
 
-router.post('/register', async (req,res)=>{
+  res.redirect("/api/login");
+});
 
-    if(req.session.user){
-        return res.redirect('/api/products')
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
     }
-
-    const {body} = req
-    const newUser = await UserModel.create(body);
-    console.log(newUser, "new user");
-    res.redirect('/api/login');
-})
-
-
-router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.log(err);
-      }
-      res.redirect('/api/login');
-    });
+    res.redirect("/api/login");
   });
+});
 
-export default router
+export default router;

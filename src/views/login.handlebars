@@ -1,14 +1,18 @@
-
 <article>
-    <form action="/api/login" method="POST">
-  <header>
-    <h1>Iniciar Sesion</h1>
-  </header>
-  <input type="email" name="email" placeholder="Email" required />
-  <input type="password" name="password" placeholder="Contraseña" required />
-  <footer>
-    <input type="submit" value="Enviar">
-    <a href="/api/register" class="btn btn-danger">Registrate</a>  
-  </footer>
+  <form action="/api/login" method="POST">
+    <header>
+      <h1>Iniciar Sesion</h1>
+    </header>
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Contraseña" required />
+
+    <a href="/api/recovery-password">Olvide mi contraseña</a>
+    <footer>
+      <input type="submit" value="Enviar">
+      <br/>
+      <a href="/api/github" role="button">Entrar por Github</a>
+      <br/>
+      <a href="/api/register" >Registrate</a>
+    </footer>
   </form>
 </article>

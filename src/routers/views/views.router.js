@@ -20,4 +20,12 @@ router.get('/logout', (req, res) => {
       res.redirect('/api/login'); // Redirige a la página de inicio de sesión después de cerrar la sesión
     });
   });
+
+
+  router.get('/recovery-password', async (req,res)=>{
+
+    res.render('recovery-password', {title: 'Recuperar Contraseña'})
+})
+
+
 export default router
