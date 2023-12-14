@@ -12,10 +12,10 @@ import sessionRouter from "./routers/api/sessions.router.js";
 import { URI } from "./db/mongodb.js";
 import User from "./models/user.model.js";
 import { init as initPassaportConfig } from "./config/passport.config.js";
-
+import config from "./config.js";
 const app = express();
 
-const SESSION_SECRET = "I5B4£2Ep7iQY4Z6XmPpF}O4oXG7LhMYGPaXi8r";
+const SESSION_SECRET = config.session_secret;
 
 app.use(
   expressSession({

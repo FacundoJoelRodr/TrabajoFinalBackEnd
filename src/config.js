@@ -1,0 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+export default {
+    port: process.env.PORT,
+    secret_idClient: process.env.SECRET_IDCLIENT, // Aquí debe corresponder a la variable definida en el archivo .env
+    secret_client: process.env.SECRET_CLIENT,
+    mongoDB_URL: process.env.MONGODB_URL,
+    session_secret: process.env.SESSION_SECRET,
+};

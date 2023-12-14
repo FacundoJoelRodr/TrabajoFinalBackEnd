@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import config from "../config.js"
 
-export const URI = '';
+export const URI = config.mongoDB_URL;
 
 export const init = async ()=>{
   try {

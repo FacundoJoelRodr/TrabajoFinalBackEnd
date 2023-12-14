@@ -1,36 +1,33 @@
 import { Router } from "express";
-import CartsManagerMongo from "../../dao/cartsManagerMongo.js";
-import mongoose from "mongoose";
+
+import CartController from "../../controller/carts.controller.js";
+//import mongoose from "mongoose";
 
 const router = Router();
 
+const cartController = new CartController();
 //// MONGO
 
 router.post("/carts", async (req, res) => {
   const { body } = req;
-   await CartsManagerMongo.create(body);
+  await cartController.create(body);
   res.status(200).json(body);
 });
 
 router.get("/carts", async (req, res) => {
-  if(!req.session.user){
-    return res.redirect('/api/login')
-}
-   await CartsManagerMongo.get();
+  await cartController.get();
   res.status(200).json();
 });
 
 router.get("/carts/:cid", async (req, res) => {
-  if(!req.session.user){
-    return res.redirect('/api/login')
-}
   try {
-    const { params: { cid } } = req;
-    const cart = await CartsManagerMongo.getById(cid);
-     const a = cart.products.map((product) => product.toJSON())
-     const b = cart._id
-     console.log(b, "a");
-   res.render('carts',{a, b})
+    const {
+      params: { cid },
+    } = req;
+
+    const cart = await cartController.getById(cid);
+    console.log(cart, "cart");
+    res.render("carts", { products: cart.products, cartId: cart.cartId });
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
   }
@@ -38,25 +35,23 @@ router.get("/carts/:cid", async (req, res) => {
 
 /////////////////////
 router.put("/carts/:cid/product/:pid", async (req, res) => {
-  const { params: { cid, pid }} = req;
-  const { quantity } = req.body; 
+  const {
+    params: { cid, pid },
+  } = req;
+  const { quantity } = req.body;
 
   if (quantity === undefined) {
-    return res.status(400).json({ error: 'La cantidad no se proporcionó correctamente' });
+    return res
+      .status(400)
+      .json({ error: "La cantidad no se proporcionó correctamente" });
   }
 
   try {
     if (!mongoose.isValidObjectId(cid) || !mongoose.isValidObjectId(pid)) {
-      return res.status(400).json({ error: 'IDs inválidos' });
+      return res.status(400).json({ error: "IDs inválidos" });
     }
 
-    const cart = await CartsManagerMongo.getById(cid);
-
-    if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
-    }
-
-    await CartsManagerMongo.updateById(cid, pid, quantity);
+    const cart = await cartController.updateProduct(cid);
 
     res.status(201).json(cart);
   } catch (error) {
@@ -67,45 +62,47 @@ router.put("/carts/:cid/product/:pid", async (req, res) => {
 ///////////////////////////////
 router.put("/carts/:cid", async (req, res) => {
   try {
-    const { params: { cid }, body  } = req;
-    await CartsManagerMongo.updateById(cid, body);
+    const {
+      params: { cid },
+      body,
+    } = req;
+    await cartController.updateById(cid, body);
     res.status(204).end();
   } catch (error) {
-      res.status(error.statusCode || 500).json({ message: error.message });  
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 });
 
 router.delete("/carts/:cid", async (req, res) => {
   try {
-    const { params: { cid },  } = req;
-    await CartsManagerMongo.deleteProductsInCart(cid);
+    const {
+      params: { cid },
+    } = req;
+    await cartController.deleteById(cid);
     res.status(204).end();
   } catch (error) {
-      res.status(error.statusCode || 500).json({ message: error.message });
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 });
 
-
 router.delete("/carts/:cid/product/:pid", async (req, res) => {
-  const { params: { cid, pid }} = req;
-  const { quantity } = req.body; 
+  const {
+    params: { cid, pid },
+  } = req;
+  const { quantity } = req.body;
 
   if (quantity === undefined) {
-    return res.status(400).json({ error: 'La cantidad no se proporcionó correctamente' });
+    return res
+      .status(400)
+      .json({ error: "La cantidad no se proporcionó correctamente" });
   }
 
   try {
     if (!mongoose.isValidObjectId(cid) || !mongoose.isValidObjectId(pid)) {
-      return res.status(400).json({ error: 'IDs inválidos' });
+      return res.status(400).json({ error: "IDs inválidos" });
     }
 
-    const cart = await CartsManagerMongo.getById(cid);
-
-    if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
-    }
-
-    await CartsManagerMongo.deleteProduct(cid, pid, quantity);
+    const cart = await cartController.deleteProduct(cid, pid);
 
     res.status(201).json(cart);
   } catch (error) {
@@ -113,6 +110,5 @@ router.delete("/carts/:cid/product/:pid", async (req, res) => {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-
 
 export default router;

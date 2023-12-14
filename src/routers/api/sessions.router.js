@@ -2,8 +2,11 @@ import { Router } from "express";
 import passport from "passport";
 import { createHash, isValidPassword } from "../../utils.js";
 import UserModel from "../../models/user.model.js";
+import UserController from "../../controller/users.controller.js";
 
 const router = Router();
+
+const userController = new UserController();
 
 router.post("/register", passport.authenticate("register", { failureRedirect: "/register" }),
   (req, res) => {
@@ -28,31 +31,24 @@ res.redirect("/api/products")
 })
 
 router.post("/recovery-password", async (req, res) => {
-  const {
-    body: { email, newPassword },
-  } = req;
-  const user = await UserModel.findOne({ email });
-  console.log(user, "user");
-  console.log(newPassword, "user111");
-  if (!user) {
-    return res.status(401).send("Email o contraseña incorrecto");
-  }
-
-  await UserModel.updateOne(
-    { email },
-    { $set: { password: createHash(newPassword) } }
-  );
-
-  res.redirect("/api/login");
+  
+ try {
+   await userController.recoveryPassword(req)
+   res.redirect("/api/login");
+ } catch (error) {
+  res.status(error.statusCode || 500).json({ message: error.message });
+ }
 });
 
-router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log(err);
-    }
+
+router.get("/logout", async (req, res) => {
+  try {
+    await userController.destroySession()
     res.redirect("/api/login");
-  });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
+  
 });
 
 export default router;

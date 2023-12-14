@@ -3,6 +3,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from 'passport-github2'
 import { createHash, isValidPassword } from "../utils.js";
 import UserModel from "../models/user.model.js";
+import config from "../config.js";
 
 
 const opts = {
@@ -11,13 +12,9 @@ const opts = {
 };
 
 const githubOpts = {
-
-  clientID: '',
-
-  clientSecret: '',
-
-  callbackURL: ''
-
+  clientID: config.secret_idClient, 
+  clientSecret: config.secret_client,
+  callbackURL: config.callbackURL,
 };
 
 export const init = () => {

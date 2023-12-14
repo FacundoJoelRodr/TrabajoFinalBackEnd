@@ -1,59 +1,24 @@
 import { Router } from "express";
-import ProductManager from "../../dao/ProductManagerMongo.js";
-import productsModel from "../../models/products.model.js";
+import ProductController from "../../controller/products.controller.js";
 
 const router = Router();
 
-const buildResponse = (data) => {
-  return {
-    status: "success",
-    payload: data.docs.map((product) => product.toJSON()),
-    totalPages: data.totalPages,
-    prevPage: data.prevPage,
-    nextPage: data.nextPage,
-    page: data.page,
-    hasPrevPage: data.hasPrevPage,
-    hasNextPage: data.nextPage,
-    prevLink: data.hasPrevPage
-    ? `http://localhost:8080/api/products?limit=${data.limit}&page=${data.prevPage}${data.category ? `&category=${data.category}` : ''}${data.sort ? `&sort=${data.sort}` : ''}`
-    : "",
-    nextLink: data.hasNextPage
-    ? `http://localhost:8080/api/products?limit=${data.limit}&page=${data.nextPage}${data.category ? `&category=${data.category}` : ''}${data.sort ? `&sort=${data.sort}` : ''}`
-    : ''
-  };
-};
-router.get("/products", async (req, res) => {
-  if(!req.session.user){
-      return res.redirect('/api/login')
-  }
-  const { first_name, last_name, email, role } = req.session.user;
+const productController = new ProductController(); 
 
-  const { page = 1, limit = 10, category, sort } = req.query;
-  const opts = { page, limit };
-  if (sort) {
-    opts.sort = { price: sort === 'asc' ? 1 : sort === 'desc' ? -1 : 1 };
+router.get("/products", async (req, res) => {
+  try {
+    const products = await productController.get(req, res);
+    console.log(products,"products");
+    res.render('products', products );
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
-  const criteria = {};
-  if (category) {
-    criteria.category = category;
-  }
-  const products = await productsModel.paginate(criteria, opts);
-  const build = buildResponse({ ...products, category });
-  const user = req.session.user;
-  const dataForRendering = { ...build, user };
- console.log(user, "user");
-  res.render('products', dataForRendering );
 });
 
 router.get("/products/:pid", async (req, res) => {
-  if(!req.session.user){
-    return res.redirect('/api/login')
-}
   try {
-    const {
-      params: { pid },
-    } = req;
-    const product = await ProductManager.getById(pid);
+    const { params: { pid } } = req;
+    const product = await productController.getById(pid);
     res.status(200).json(product);
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
@@ -61,10 +26,16 @@ router.get("/products/:pid", async (req, res) => {
 });
 
 router.post("/products", async (req, res) => {
-  const { body } = req;
-  const product = await ProductManager.create(body);
-  res.status(201).json(product);
+
+  try {
+    const { body } = req;
+    const product = await productController.create(body);
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ message: error.message });
+  }
 });
+
 
 router.put("/products/:pid", async (req, res) => {
   try {
@@ -72,7 +43,7 @@ router.put("/products/:pid", async (req, res) => {
       params: { pid },
       body,
     } = req;
-    await ProductManager.updateById(pid, body);
+    await productController.updateById(pid, body);
     res.status(204).end();
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
@@ -84,7 +55,7 @@ router.delete("/products/:pid", async (req, res) => {
     const {
       params: { pid },
     } = req;
-    await ProductManager.deleteById(pid);
+    await productController.deleteById(pid);
     res.status(204).end();
   } catch (error) {
     res.status(error.statusCode || 500).json({ message: error.message });
