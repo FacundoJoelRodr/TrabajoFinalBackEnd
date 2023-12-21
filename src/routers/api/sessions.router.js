@@ -30,13 +30,13 @@ req.session.user = req.user;
 res.redirect("/api/products")
 })
 
-router.post("/recovery-password", async (req, res) => {
+router.post("/recovery-password", async (req, res, next) => {
   
  try {
    await userController.recoveryPassword(req)
    res.redirect("/api/login");
  } catch (error) {
-  res.status(error.statusCode || 500).json({ message: error.message });
+  next(error)
  }
 });
 
@@ -46,9 +46,8 @@ router.get("/logout", async (req, res) => {
     await userController.destroySession()
     res.redirect("/api/login");
   } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
+    next(error)
   }
-  
 });
 
 export default router;

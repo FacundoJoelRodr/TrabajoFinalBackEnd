@@ -76,9 +76,13 @@ app.use("/api", viewSessionRouter);
 app.use("/api", sessionRouter);
 
 app.use((error, req, res, next) => {
+if(error instanceof Exception){
+res.status(error.status).json({status: 'error',message: error.message})
+}else{
   const message = `Ah ocurrido un error desconocido : ${error.message}`;
   console.log(message);
   res.status(500).json({ status: "error", message });
+}
 });
 
 export default app;

@@ -18,3 +18,28 @@ export class Exception extends Error {
     this.statusCode = status;
   }
 }
+
+
+export class NotFoundException extends Exception {
+  constructor(message, status) {
+    super(message,404);
+   
+  }
+}
+
+
+export class BadRequestException extends Exception {
+  constructor(message, status) {
+    super(message,400);
+   
+  }
+}
+
+
+
+export class UnauthorizedException extends Exception {
+  constructor(message, status) {
+    super(message,401);
+   
+  }
+}

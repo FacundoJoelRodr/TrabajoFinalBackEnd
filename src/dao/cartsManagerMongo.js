@@ -1,33 +1,34 @@
+
+import { Exception, NotFoundException } from '../utils.js';
 import CartSchema from "../models/carts.model.js";
-import ProductSchema from "../models/products.model.js";
-import { Exception } from "../utils.js";
 
 export default class CartsManager {
   // OBTENER TODOS LOS CARRITOS
   static get(query = {}) {
     const criteria = {};
-    // Si tienes algún filtro basado en consulta, puedes aplicarlo aquí.
+   if(!criteria){
+    throw new NotFoundException('Not Found');
+   }
     return CartSchema.find(criteria).populate('products.product')
   }
 
   // CREAR CARRITO
   static async create(data) {
-    try {
+
       const newCart = await CartSchema.create(data); 
-  
-      console.log("Carrito creado correctamente");
+      if(!newCart){
+        throw new NotFoundException('Not Found');
+      }
+ 
       return newCart;
-    } catch (error) {
-      console.error("Error al crear el carrito:", error);
-      return null;
-    }
+
   }
 
   // OBTENER CARRITO POR ID
   static async getById(cid) {
     const cart = await CartSchema.findById(cid).populate('products.product');
     if (!cart) {
-      throw new Exception("No se encontró el carrito", 404);
+      throw new NotFoundException('Not Found');
     }
     return cart;
   }
@@ -36,14 +37,12 @@ export default class CartsManager {
     const cart = await CartSchema.findById(cid);
   
     if (!cart) {
-      throw new Exception("No se encontró el carrito", 404);
+      throw new NotFoundException('Not Found');
     }
   
     let product = cart.products.find((p) => String(p.product) === pid);
   
-    if (!product) {
-      console.log("El producto no existe en el carrito");
-      
+    if (!product) {      
       product = { product: pid, quantity: quantity };
       cart.products.push(product);
     }
@@ -52,7 +51,6 @@ export default class CartsManager {
   
     await cart.save();
   
-    console.log("Carrito actualizado correctamente");
   }
   
 
@@ -61,13 +59,11 @@ export default class CartsManager {
     const cart = await CartSchema.findById(cid);
   
     if (!cart) {
-      throw new Exception("No se encontró el carrito", 404);
+      throw new NotFoundException('Not Found');
     }
     const criteria = { _id: cid };
     
-    await CartSchema.deleteOne(criteria);
-  
-    console.log("Carrito eliminado correctamente");
+    return await CartSchema.deleteOne(criteria);
   }
 
 
@@ -78,34 +74,30 @@ static async deleteProduct(cid, pid, quantity) {
   const cart = await CartSchema.findById(cid);
   
   if (!cart) {
-    throw new Exception("No se encontró el carrito", 404);
+    throw new NotFoundException('Not Found');
   }
 
 
   const product = cart.products.find((p) => String(p._id) === pid);
 
   if (!product) {
-    console.log("El producto no existe en el carrito");
     cart.products.push({ _id: pid, quantity });
-  } else {
-    console.log("El producto ya existe en el carrito");
-    
+  } else {    
     product.quantity -= quantity; 
   }
 
-  await cart.save(); 
+  return await cart.save(); 
 
-  console.log("Carrito actualizado correctamente");
 }
 
 static async deleteProductsInCart(cid) {
   const cart = await CartSchema.findOneAndUpdate({ _id: cid }, { $set: { products: [] } }, { new: true });
 
   if (!cart) {
-    throw new Exception("No se encontró el carrito", 404);
+    throw new NotFoundException('Not Found');
   }
 
-  console.log("Productos en el carrito eliminados correctamente");
+  return cart
 }
 
 }

@@ -8,18 +8,27 @@ const router = Router();
 const cartController = new CartController();
 //// MONGO
 
-router.post("/carts", async (req, res) => {
+router.post("/carts", async (req, res, next) => {
+try{
   const { body } = req;
   await cartController.create(body);
   res.status(200).json(body);
+
+}catch(error){
+next(next)
+}
 });
 
-router.get("/carts", async (req, res) => {
+router.get("/carts", async (req, res, next) => {
+try{
   await cartController.get();
   res.status(200).json();
+} catch(error){
+next(error)
+}
 });
 
-router.get("/carts/:cid", async (req, res) => {
+router.get("/carts/:cid", async (req, res, next) => {
   try {
     const {
       params: { cid },
@@ -29,7 +38,7 @@ router.get("/carts/:cid", async (req, res) => {
     console.log(cart, "cart");
     res.render("carts", { products: cart.products, cartId: cart.cartId });
   } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
+    next(error)
   }
 });
 
@@ -55,12 +64,11 @@ router.put("/carts/:cid/product/:pid", async (req, res) => {
 
     res.status(201).json(cart);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    next(error)
   }
 });
 ///////////////////////////////
-router.put("/carts/:cid", async (req, res) => {
+router.put("/carts/:cid", async (req, res, next) => {
   try {
     const {
       params: { cid },
@@ -69,11 +77,11 @@ router.put("/carts/:cid", async (req, res) => {
     await cartController.updateById(cid, body);
     res.status(204).end();
   } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
+    next(error)
   }
 });
 
-router.delete("/carts/:cid", async (req, res) => {
+router.delete("/carts/:cid", async (req, res, next) => {
   try {
     const {
       params: { cid },
@@ -81,11 +89,11 @@ router.delete("/carts/:cid", async (req, res) => {
     await cartController.deleteById(cid);
     res.status(204).end();
   } catch (error) {
-    res.status(error.statusCode || 500).json({ message: error.message });
+    next(error)
   }
 });
 
-router.delete("/carts/:cid/product/:pid", async (req, res) => {
+router.delete("/carts/:cid/product/:pid", async (req, res, next) => {
   const {
     params: { cid, pid },
   } = req;
@@ -106,8 +114,7 @@ router.delete("/carts/:cid/product/:pid", async (req, res) => {
 
     res.status(201).json(cart);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+   next(error)
   }
 });
 

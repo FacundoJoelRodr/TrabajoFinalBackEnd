@@ -1,81 +1,77 @@
-import productSchema from "../models/products.model.js";
-import { Exception } from "../utils.js";
+import productSchema from '../models/products.model.js';
+import { Exception, NotFoundException } from '../utils.js';
 
 export default class ProductManager {
+  static async validateRequiredFields(data) {
+    const { title, code, price, stock, description, category } = data;
+    if (!title || !code || !price || !stock || !description || !category) {
+      throw new BadRequestException('Faltan campos obligatorios');
+    }
+  }
+
   ///OBTENER TODOS LOS PRODUCTOS
   static get(query = {}) {
     const criteria = {};
     if (query.course) {
       criteria.course = query.course;
+      return productSchema.find(criteria);
+    } else {
+      throw new NotFoundException('Not Found');
     }
-
-    return productSchema.find(criteria);
   }
+
   //CREAR PRODUCTO
   static async create(data) {
-    try {
-        const products = await productSchema.find(); 
-        const { title, code, price, stock, description, category } = data;
-        const product = await productSchema.create(data);
-        if (!title || !code || !price || !stock || !description|| !category) {
-            console.log(`Faltan campos obligatorios`);
-            return null;
-        }
-        if (products.some((p) => p.code === code)) {
-            console.log(
-                "Este producto ya se encuentra en el array y no se va a agregar"
-            );
-            return null;
-        } else {
-            console.log("Producto creado correctamente");
-            return product;
-        }
-    } catch (error) {
-        console.error("Error al buscar productos:", error);
-        return null;
+    const products = await productSchema.find();
+
+    await this.validateRequiredFields(data);
+
+    const product = await productSchema.create(data);
+
+    if (products.some((p) => p.code === code)) {
+      throw new BadRequestException(
+        'Este producto ya se encuentra en la base de datos'
+      );
+    } else {
+      console.log('Producto creado correctamente');
+      return product;
     }
-}
+  }
 
   ///OBTENER PRODUCTO POR ID
   static async getById(pid) {
     const product = await productSchema.findById(pid);
     if (!product) {
-      throw new Exception("No existe el producto", 404);
+      throw new NotFoundException('Not Found');
     }
     return product;
   }
 
   ///ACTUALIZA EL PRODUCTO POR ID
   static async updateById(pid, data) {
-    const { title, code, price, stock, description,category } = data;
+    await this.validateRequiredFields(data);
 
-    if (!title || !code || !price || !stock || !description|| !category) {
-        console.log(`Faltan campos obligatorios`);
-        return null;
-    }
     const product = await productSchema.findById(pid);
     if (!product) {
-      throw new Exception("No existe el producto", 404);
+      throw new NotFoundException('Not Found');
     }
     const criteria = { _id: pid };
     const operation = { $set: data };
-    
-    await productSchema.updateOne(criteria, operation);
-    
-    console.log("Producto se ha actualizado correctamente");
-}
+
+    return await productSchema.updateOne(criteria, operation);
+  }
 
   ///BORRRA EL PRODUCTO POR ID
 
   static async deleteById(pid) {
     const product = await productSchema.findById(pid);
     if (!product) {
-      throw new Exception("No existe el producto", 404);
+      throw new NotFoundException('Not Found');
     }
     const criteria = { _id: pid };
-    
+
     await productSchema.deleteOne(criteria);
-    
-    console.log("Producto se ha eliminado correctamente");
-}
+
+    console.log('Producto se ha eliminado correctamente');
+  }
 }
