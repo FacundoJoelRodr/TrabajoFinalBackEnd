@@ -1,5 +1,5 @@
 import productSchema from '../models/products.model.js';
-import { Exception, NotFoundException } from '../utils.js';
+import { Exception, NotFoundException,BadRequestException } from '../utils.js';
 
 export default class ProductManager {
   static async validateRequiredFields(data) {

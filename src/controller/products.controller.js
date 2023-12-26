@@ -56,9 +56,7 @@ export default class ProductController{
 
     async getById (pid){
 
-      if(!req.session.user){
-        return res.redirect('/api/login')
-    }
+
 
     const product = await ProductManager.getById(pid);
         return product

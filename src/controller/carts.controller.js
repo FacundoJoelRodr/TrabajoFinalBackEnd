@@ -1,5 +1,8 @@
 import CartsManagerMongo from "../dao/cartsManagerMongo.js";
-
+import cartsModel from "../models/carts.model.js";
+import ProductSchema from "../models/products.model.js"
+import ProductManager from "../dao/ProductManagerMongo.js"
+import {NotFoundException} from "../utils.js"
 export default class CartController {
   async get(req, res) {
    
@@ -63,5 +66,51 @@ export default class CartController {
     await CartsManagerMongo.updateById(cid, pid, quantity);
 
     return cart;
+  }
+
+
+  async purchaseCart(cid) {
+    const cart = await cartsModel.findById(cid);
+  
+    if (!cart) {
+      throw new NotFoundException('Carrito no encontrado');
+    }
+  
+    const newCart = await cartsModel.create({ products: [] });
+    console.log('Inicio del proceso de compra');
+
+    for (const cartProduct of cart.products) {
+      const { product: productId, quantity } = cartProduct;
+    
+    
+      console.log(`Procesando producto: ${productId}`);
+
+      const product = await ProductSchema.findById(productId);
+      console.log(product, "product");
+      if (!product) {
+        console.log(`Producto no encontrado: ${productId}`);
+        continue;
+      }
+    
+      if (product.stock < quantity) {
+
+        await CartsManagerMongo.updateById(newCart.id, productId, quantity);
+      } else {
+        product.stock -= quantity;
+       await ProductManager.updateById(product.id, product);
+    
+      }
+      console.log(`Producto ${productId} procesado exitosamente`);
+    }
+    console.log('Fin del proceso de compra');
+    const newCartProductIds = newCart.products.map((product) => product.product);
+    console.log(newCartProductIds, "newCartProductIds");
+    // Filtra los productos del carrito original que se transfieren al nuevo carrito
+    cart.products = cart.products.filter((cartProduct) => !newCartProductIds.includes(cartProduct.product));
+     console.log(cart.products, "cart.products");
+    await newCart.save();
+    await cart.save();
+    
+    return { message: 'Compra completada con éxito' };
   }
 }

@@ -77,13 +77,12 @@ app.use("/api", viewSessionRouter);
 app.use("/api", sessionRouter);
 
 app.use((error, req, res, next) => {
-if(error instanceof Exception){
-res.status(error.status).json({status: 'error',message: error.message})
-}else{
-  const message = `Ah ocurrido un error desconocido : ${error.message}`;
-  console.log(message);
-  res.status(500).json({ status: "error", message });
-}
+  if (error instanceof Exception) {
+    res.status(500).json({ error: 'Ha ocurrido un error interno del servidor' });
+  } else {
+    const message = `Ha ocurrido un error desconocido: ${error.message}`;
+    console.error(message);
+    res.status(500).json({ status: 'error', message });
+  }
 });
-
 export default app;

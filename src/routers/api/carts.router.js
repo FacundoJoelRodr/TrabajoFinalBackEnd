@@ -118,4 +118,15 @@ router.delete("/carts/:cid/product/:pid", async (req, res, next) => {
   }
 });
 
+
+router.put("/carts/:cid/purchase", async (req, res, next) => {
+  try {
+    const { cid } = req.params;
+
+    await cartController.purchaseCart(cid);
+    res.status(200).end();
+  } catch (error) {
+    next(error)
+  }
+});
 export default router;
