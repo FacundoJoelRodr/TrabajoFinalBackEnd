@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import CartController from "../../controller/carts.controller.js";
-//import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -43,7 +43,7 @@ router.get("/carts/:cid", async (req, res, next) => {
 });
 
 /////////////////////
-router.put("/carts/:cid/product/:pid", async (req, res) => {
+router.put("/carts/:cid/product/:pid", async (req, res,next) => {
   const {
     params: { cid, pid },
   } = req;
@@ -60,7 +60,7 @@ router.put("/carts/:cid/product/:pid", async (req, res) => {
       return res.status(400).json({ error: "IDs inválidos" });
     }
 
-    const cart = await cartController.updateProduct(cid);
+    const cart = await cartController.updateProduct(cid,pid,quantity);
 
     res.status(201).json(cart);
   } catch (error) {

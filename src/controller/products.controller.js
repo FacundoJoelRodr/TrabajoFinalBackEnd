@@ -26,9 +26,7 @@ export default class ProductController{
 
     async get (req, res){
 
-      if(!req.session.user){
-        return res.redirect('/api/login')
-    }
+     
         const { first_name, last_name, email, role } = req.session.user;
 
         const { page = 1, limit = 10, category, sort } = req.query;
@@ -50,9 +48,7 @@ export default class ProductController{
 
 
     async create (body,req, res){
-      if(!req.session.user){
-        return res.redirect('/api/login')
-    }
+    
       const product = await ProductManager.create(body);
       return product
     }
@@ -71,17 +67,12 @@ export default class ProductController{
 
     async updateById (req,res, pid, body){
 
-      if(!req.session.user){
-        return res.redirect('/api/login')
-    }
       await ProductManager.updateById(pid, body);
     }
 
     async deleteById (req, res, pid){
 
-      if(!req.session.user){
-        return res.redirect('/api/login')
-    }
+    
 
       await ProductManager.deleteById(pid);
         

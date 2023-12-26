@@ -13,6 +13,7 @@ import { URI } from "./db/mongodb.js";
 import User from "./models/user.model.js";
 import { init as initPassaportConfig } from "./config/passport.config.js";
 import config from "./config.js";
+import {Exception} from "./utils.js"
 const app = express();
 
 const SESSION_SECRET = config.session_secret;
@@ -25,7 +26,7 @@ app.use(
     store: MongoStore.create({
       mongoUrl: URI,
       mongoOptions: {},
-      ttl: 120,
+      ttl: 120000,
     }),
   })
 );
