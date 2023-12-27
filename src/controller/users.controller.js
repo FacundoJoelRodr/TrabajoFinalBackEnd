@@ -9,8 +9,6 @@ export default class UserController {
         body: { email, newPassword },
       } = req;
       const user = await userModel.findOne({ email });
-      console.log(user, "user");
-      console.log(newPassword, "user111");
       if (!user) {
         return res.status(401).send("Email o contraseña incorrecto");
       }

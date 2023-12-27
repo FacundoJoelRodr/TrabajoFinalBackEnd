@@ -1,22 +1,17 @@
 import CartsManagerMongo from "../dao/cartsManagerMongo.js";
-import cartsModel from "../models/carts.model.js";
-import ProductSchema from "../models/products.model.js"
-import ProductManager from "../dao/ProductManagerMongo.js"
-import {NotFoundException} from "../utils.js"
+import { NotFoundException } from "../utils.js";
+import ProductSchema from "../models/products.model.js";
+import ticketSchema from "../models/tickets.model.js";
 export default class CartController {
   async get(req, res) {
-   
     return await CartsManagerMongo.get();
   }
 
   async create(req, res, body) {
-    
-
     return await CartsManagerMongo.create(body);
   }
 
   async getById(cid) {
-  
     const cart = await CartsManagerMongo.getById(cid);
     const a = cart.products.map((product) => product.toJSON());
     const b = cart._id;
@@ -24,14 +19,10 @@ export default class CartController {
   }
 
   async updateById(req, res, cid, body) {
- 
-
     return await CartsManagerMongo.updateById(cid, body);
   }
 
   async deleteById(req, res, cid) {
-   
-
     return await CartsManagerMongo.deleteProductsInCart(cid);
   }
 
@@ -68,49 +59,62 @@ export default class CartController {
     return cart;
   }
 
-
-  async purchaseCart(cid) {
-    const cart = await cartsModel.findById(cid);
-  
+  async generateTicket(cid, req) {
+    const cart = await CartsManagerMongo.getById(cid);
     if (!cart) {
-      throw new NotFoundException('Carrito no encontrado');
+      throw new NotFoundException("Carrito no encontrado");
     }
+
+    const fechaActual = new Date();
+    const fechaFormateada = fechaActual.toLocaleDateString('es-AR');
   
-    const newCart = await cartsModel.create({ products: [] });
-    console.log('Inicio del proceso de compra');
+    const ticketProducts = cart.products;
+    const totalAmount = this.calculateTotalAmount(ticketProducts);
 
-    for (const cartProduct of cart.products) {
-      const { product: productId, quantity } = cartProduct;
-    
-    
-      console.log(`Procesando producto: ${productId}`);
+    const ticketData = {
+      code: cid,
+      purchase_datetime: fechaFormateada,
+      amount: totalAmount,
+      purchaser: req.user.email,
+    };
 
-      const product = await ProductSchema.findById(productId);
-      console.log(product, "product");
-      if (!product) {
-        console.log(`Producto no encontrado: ${productId}`);
-        continue;
+    const ticket = await ticketSchema.create(ticketData);
+    const newCart = await CartsManagerMongo.create();
+
+    for (const ticketProduct of ticketProducts) {
+      const product = await ProductSchema.findById(ticketProduct.product);
+
+      if (product) {
+        let stock = (product.stock -= ticketProduct.quantity);
+
+        if (stock < 0) {
+          await CartsManagerMongo.updateById(
+            newCart.id,
+            ticketProduct.product,
+            Math.abs(stock)
+          );
+          product.stock = 0;
+        } else {
+          product.stock = stock;
+        }
+
+        await product.save(); // Guarda los cambios en el producto
       }
-    
-      if (product.stock < quantity) {
-
-        await CartsManagerMongo.updateById(newCart.id, productId, quantity);
-      } else {
-        product.stock -= quantity;
-       await ProductManager.updateById(product.id, product);
-    
-      }
-      console.log(`Producto ${productId} procesado exitosamente`);
     }
-    console.log('Fin del proceso de compra');
-    const newCartProductIds = newCart.products.map((product) => product.product);
-    console.log(newCartProductIds, "newCartProductIds");
-    // Filtra los productos del carrito original que se transfieren al nuevo carrito
-    cart.products = cart.products.filter((cartProduct) => !newCartProductIds.includes(cartProduct.product));
-     console.log(cart.products, "cart.products");
-    await newCart.save();
-    await cart.save();
-    
-    return { message: 'Compra completada con éxito' };
+    return ticket.id;
+  }
+
+  calculateTotalAmount(products) {
+    return products
+      .reduce((total, product) => {
+        const quantity = Number(product.quantity);
+        const price = Number(product.product.price);
+        if (!isNaN(quantity) && !isNaN(price)) {
+          return total + quantity * price;
+        } else {
+          return total;
+        }
+      }, 0)
+      .toFixed(2);
   }
 }

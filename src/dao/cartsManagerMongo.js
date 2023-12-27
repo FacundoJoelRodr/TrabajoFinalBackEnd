@@ -2,6 +2,7 @@
 import { Exception, NotFoundException } from '../utils.js';
 import CartSchema from "../models/carts.model.js";
 
+
 export default class CartsManager {
   // OBTENER TODOS LOS CARRITOS
   static get(query = {}) {
