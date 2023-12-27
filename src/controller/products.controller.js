@@ -1,6 +1,6 @@
 import productsModel from "../models/products.model.js"
 import ProductManager from "../dao/ProductManagerMongo.js";
-
+import cartsModel from "../models/carts.model.js"
 const buildResponse = (data) => {
   return {
     status: "success",
@@ -38,10 +38,12 @@ export default class ProductController{
         if (category) {
             criteria.category = category;
         }
+        const cart = await cartsModel.findOne()
+        const cartId = cart._id;
         const products = await productsModel.paginate(criteria, opts);
         const build = buildResponse({ ...products, category });
         const user = req.session.user;
-        const dataForRendering = { ...build, user };
+        const dataForRendering = { ...build, user, cartId };
         return dataForRendering;
 
     }

@@ -97,7 +97,7 @@ export default class CartController {
         } else {
           product.stock = stock;
         }
-
+        await CartController.deleteById(cid)
         await product.save(); // Guarda los cambios en el producto
       }
     }
