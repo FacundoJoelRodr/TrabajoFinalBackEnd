@@ -7,4 +7,5 @@ export default {
     secret_client: process.env.SECRET_CLIENT,
     mongoDB_URL: process.env.MONGODB_URL,
     session_secret: process.env.SESSION_SECRET,
+    jwt_secret: process.env.JWT_SECRET,
 };

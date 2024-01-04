@@ -1,18 +1,32 @@
 <article>
-  <form action="/api/login" method="POST">
+  <form id="login-form" method="POST">
     <header>
       <h1>Iniciar Sesion</h1>
     </header>
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Contraseña" required />
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="Email"
+      required
+    />
+    <input
+      type="password"
+      id="password"
+      name="password"
+      placeholder="Contraseña"
+      required
+    />
 
     <a href="/api/recovery-password">Olvide mi contraseña</a>
     <footer>
-      <input type="submit" value="Enviar">
-      <br/>
+      <input type="submit" value="Enviar" />
+      <br />
       <a href="/api/github" role="button">Entrar por Github</a>
-      <br/>
-      <a href="/api/register" >Registrate</a>
+      <br />
+      <a href="/api/register">Registrate</a>
     </footer>
   </form>
 </article>
+<script src="/js/login.js"></script>
+

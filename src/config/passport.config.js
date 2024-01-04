@@ -1,24 +1,30 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as GithubStrategy } from 'passport-github2'
-import { createHash, isValidPassword } from "../utils.js";
-import UserModel from "../models/user.model.js";
-import config from "../config.js";
-
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { Strategy as GithubStrategy } from 'passport-github2';
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
+import { createHash, isValidPassword, JWT_SECRET } from '../utils.js';
+import UserModel from '../models/user.model.js';
+import config from '../config.js';
 
 const opts = {
-  usernameField: "email",
+  usernameField: 'email',
   passReqToCallback: true,
 };
 
 const githubOpts = {
-  clientID: config.secret_idClient, 
+  clientID: config.secret_idClient,
   clientSecret: config.secret_client,
   callbackURL: config.callbackURL,
 };
+function cookieExtractor(req) {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies.access_token;
+  }
+  return token;
+}
 
 export const init = () => {
-
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
@@ -32,64 +38,84 @@ export const init = () => {
     }
   });
 
-  passport.use("register", new LocalStrategy(opts, async (req, email, password, done) => {
+  passport.use(
+    'jwt',
+    new JWTStrategy(
+      {
+        jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+        secretOrKey: JWT_SECRET, // Corregido: secretOrKey en lugar de secrectOrKey
+      },
+      (payload, done) => {
+        return done(null, payload);
+      }
+    )
+  );
+
+  passport.use(
+    'register',
+    new LocalStrategy(opts, async (req, email, password, done) => {
       try {
         const user = await UserModel.findOne({ email });
         if (user) {
-          return done(null, false, { message: "User already registered" });
+          return done(null, false, { message: 'User already registered' });
         }
 
         const newUser = await UserModel.create({
           ...req.body,
           password: createHash(password),
         });
-        console.log(newUser, "newuser");
+        console.log(newUser, 'newuser');
         done(null, newUser);
       } catch (error) {
-        return done(new Error("Error al registrar"), error.message);
+        return done(new Error('Error al registrar'), error.message);
       }
     })
   );
 
-  passport.use("login", new LocalStrategy(opts, async (req, email, password, done) => {
+  passport.use(
+    'login',
+    new LocalStrategy(opts, async (req, email, password, done) => {
       try {
         const user = await UserModel.findOne({ email });
 
         if (!user) {
-          return done(new Error("Email y contraseña invalidos"));
+          return done(new Error('Email y contraseña invalidos'));
         }
         const isPassValid = isValidPassword(password, user);
         if (!isPassValid) {
-          return done(new Error("Email y contraseña invalidos!"));
+          return done(new Error('Email y contraseña invalidos!'));
         }
-        console.log(user, "user");
+        console.log(user, 'user');
         done(null, user);
       } catch (error) {
-        return done(new Error("Error al Iniciar Sesion"), error.message);
+        return done(new Error('Error al Iniciar Sesion'), error.message);
       }
     })
   );
 
-  passport.use("github", new GithubStrategy(githubOpts, async (accessToken, refreshToken, profile, done)=>{
-    const email = profile._json.email
-    let user = await UserModel.findOne({email});
-    if(user){
-     return done(null, user)
-    }
+  passport.use(
+    'github',
+    new GithubStrategy(
+      githubOpts,
+      async (accessToken, refreshToken, profile, done) => {
+        const email = profile._json.email;
+        let user = await UserModel.findOne({ email });
+        if (user) {
+          return done(null, user);
+        }
 
-    user = {
-    first_name: profile._json.name ,
-    last_name: '',
-    age: 18,
-    email ,
-    password: '',
-    role: 'USER',
-    provider: 'Github',
-    };
-    const newUser = await UserModel.create(user);
-    done(null, newUser);
-
-  }))
-
-
+        user = {
+          first_name: profile._json.name,
+          last_name: '',
+          age: 18,
+          email,
+          password: '',
+          role: 'USER',
+          provider: 'Github',
+        };
+        const newUser = await UserModel.create(user);
+        done(null, newUser);
+      }
+    )
+  );
 };

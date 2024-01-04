@@ -142,7 +142,7 @@ router.get('/carts/:cid/purchase', async (req, res, next) => {
       purchaser: ticket.purchaser || 'No disponible',
       amount: ticket.amount || 'No disponible'
     };
-
+c
     res.render('tickets', dataToSend);
   } catch (error) {
     next(error);
