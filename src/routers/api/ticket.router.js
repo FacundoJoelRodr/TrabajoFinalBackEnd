@@ -12,8 +12,10 @@ const cartController = new CartController();
 router.post("/carts/:cid/purchase", async (req, res, next) => {
     try {
       const { cid } = req.params;
+      const userCart = await userModel.findOne({ carts: cart });
   
-      const ticket = await cartController.generateTicket(cid);
+      const ticket = await cartController.generateTicket(cid,userCart);
+      console.log(userCart,"usercartrouter");
       res.status(200).json({ ticket });
     } catch (error) {
       next(error) 
@@ -24,6 +26,7 @@ router.post("/carts/:cid/purchase", async (req, res, next) => {
     try {
       const { params: { cid } } = req;
       const cart = await cartController.generateTicket(cid);
+
       const ticket = await ticketsModel.findById(cart);
       res.render('tickets', { 
         code: ticket.code || 'No disponible',

@@ -5,6 +5,7 @@ import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import { createHash, isValidPassword, JWT_SECRET } from '../utils.js';
 import UserModel from '../models/user.model.js';
 import config from '../config.js';
+import CartController from '../controller/carts.controller.js';
 
 const opts = {
   usernameField: 'email',
@@ -24,6 +25,7 @@ function cookieExtractor(req) {
   return token;
 }
 
+const cartController = new  CartController();
 export const init = () => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -43,7 +45,7 @@ export const init = () => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: JWT_SECRET, // Corregido: secretOrKey en lugar de secrectOrKey
+        secretOrKey: JWT_SECRET, 
       },
       (payload, done) => {
         return done(null, payload);
@@ -56,6 +58,7 @@ export const init = () => {
     new LocalStrategy(opts, async (req, email, password, done) => {
       try {
         const user = await UserModel.findOne({ email });
+        const cartUser = await cartController.create()
         if (user) {
           return done(null, false, { message: 'User already registered' });
         }
@@ -63,6 +66,7 @@ export const init = () => {
         const newUser = await UserModel.create({
           ...req.body,
           password: createHash(password),
+          carts: cartUser.id
         });
         console.log(newUser, 'newuser');
         done(null, newUser);

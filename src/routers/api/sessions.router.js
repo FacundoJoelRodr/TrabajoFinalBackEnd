@@ -9,6 +9,7 @@ import {
 import UserModel from '../../models/user.model.js';
 import UserController from '../../controller/users.controller.js';
 
+
 const router = Router();
 
 const userController = new UserController();
@@ -28,6 +29,7 @@ router.post('/login', async (req, res) => {
 
   const token = tokenGenerator(user);
   res.cookie('access_token', token, { maxAge: 60000, httpOnly: true });
+  
     req.session.user = token;
     res.redirect('/api/products');
   

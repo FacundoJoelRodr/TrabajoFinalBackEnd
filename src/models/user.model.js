@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     age: { type: Number },
     email: { type: String, unique: true },
     password: { type: String },
-    role: { type: String, enum: ['ADMIN', 'USER'], default: 'USER' } // Definiendo el campo 'role'
+    carts: { type: mongoose.Schema.Types.ObjectId, ref: 'carts' },
+    role: { type: String, enum: ['ADMIN', 'USER'], default: 'USER' } 
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);

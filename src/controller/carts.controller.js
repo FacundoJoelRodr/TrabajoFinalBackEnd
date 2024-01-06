@@ -2,6 +2,8 @@ import CartsManagerMongo from "../dao/cartsManagerMongo.js";
 import { NotFoundException } from "../utils.js";
 import ProductSchema from "../models/products.model.js";
 import ticketSchema from "../models/tickets.model.js";
+import cartsModel from "../models/carts.model.js";
+import userModel from "../models/user.model.js";
 export default class CartController {
   async get(req, res) {
     return await CartsManagerMongo.get();
@@ -59,12 +61,15 @@ export default class CartController {
     return cart;
   }
 
-  async generateTicket(cid, req) {
+  async generateTicket(cid) {
     const cart = await CartsManagerMongo.getById(cid);
     if (!cart) {
       throw new NotFoundException("Carrito no encontrado");
     }
 
+   
+    const userCart = await userModel.findOne({ carts: cart });
+    console.log(userCart,"use");
     const fechaActual = new Date();
     const fechaFormateada = fechaActual.toLocaleDateString('es-AR');
   
@@ -75,7 +80,7 @@ export default class CartController {
       code: cid,
       purchase_datetime: fechaFormateada,
       amount: totalAmount,
-      purchaser: req.user.email,
+      purchaser: userCart.email
     };
 
     const ticket = await ticketSchema.create(ticketData);
@@ -93,12 +98,17 @@ export default class CartController {
             ticketProduct.product,
             Math.abs(stock)
           );
+          await userModel.findOneAndUpdate(
+            { _id: userId },
+            { cart: newCart.id },
+            { new: true }
+          );
           product.stock = 0;
         } else {
           product.stock = stock;
         }
-        await cartController.deleteById(cid)
-        await product.save(); // Guarda los cambios en el producto
+        await CartsManagerMongo.deleteById(cid)
+        await product.save(); 
       }
     }
     return ticket.id;

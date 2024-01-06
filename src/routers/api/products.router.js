@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ProductController from "../../controller/products.controller.js";
-
+import { UserMiddleware } from "../../utils.js";
 const router = Router();
 
 const productController = new ProductController(); 
@@ -8,7 +8,6 @@ const productController = new ProductController();
 router.get("/products", async (req, res, next) => {
   try {
     const products = await productController.get(req, res);
-    console.log(products,"products");
     res.render('products', products );
   } catch (error) {
    next(error)
@@ -25,7 +24,7 @@ router.get("/products/:pid", async (req, res, next) => {
   }
 });
 
-router.post("/products", async (req, res, next) => {
+router.post("/products", UserMiddleware('ADMIN'),async (req, res, next) => {
 
   try {
     const { body } = req;
@@ -37,7 +36,7 @@ router.post("/products", async (req, res, next) => {
 });
 
 
-router.put("/products/:pid", async (req, res, next) => {
+router.put("/products/:pid",  async (req, res, next) => {
   try {
     const {
       params: { pid },
@@ -50,7 +49,7 @@ router.put("/products/:pid", async (req, res, next) => {
   }
 });
 
-router.delete("/products/:pid", async (req, res, next) => {
+router.delete("/products/:pid", UserMiddleware('ADMIN'), async (req, res, next) => {
   try {
     const {
       params: { pid },

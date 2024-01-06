@@ -1,4 +1,4 @@
-export default class UserDTO {
+/*export default class UserDTO {
     constructor(user){
         this.id = user.id;
         this.first_name = user.first_name
@@ -8,4 +8,4 @@ export default class UserDTO {
         this.role = user.role || 'user'
         this.password = user.password
     }
-}
+}*/

@@ -57,6 +57,20 @@ export const AuthMiddleware = (strategy) => (req, res, next) => {
   })(req, res, next);
 };
 
+export  const UserMiddleware = (allowedRoles) => {
+  return (payload,req,res,next) => {
+    const user = payload.user.role; 
+    if (!user || !user.role) {
+      return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      return res.status(403).json({ message: 'No tienes permiso para realizar esta acción' });
+    }
+    next();
+  };
+};
+
 export class Exception extends Error {
   constructor(message, status) {
     super(message);

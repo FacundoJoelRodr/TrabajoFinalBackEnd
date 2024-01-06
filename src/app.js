@@ -7,13 +7,15 @@ import path from 'path';
 import { __dirname } from './utils.js';
 import productRouter from './routers/api/products.router.js';
 import cartRouter from './routers/api/carts.router.js';
+import emailRouter from './routers/api/email.router.js';
+
 import viewSessionRouter from './routers/views/views.router.js';
 import sessionRouter from './routers/api/sessions.router.js';
 import User from './models/user.model.js';
 import { init as initPassaportConfig } from './config/passport.config.js';
 import config from './config.js';
 import { Exception } from './utils.js';
-import { URI } from "./db/mongodb.js";
+import { URI } from './db/mongodb.js';
 import cookieParser from 'cookie-parser';
 const app = express();
 
@@ -71,12 +73,13 @@ app.set('view engine', 'handlebars');
 initPassaportConfig();
 
 app.use(passport.initialize());
-//app.use(passport.session());---> probar en sacar
+app.use(passport.session());
 
 app.use('/api', productRouter);
 app.use('/api', cartRouter);
 app.use('/api', viewSessionRouter);
-app.use('/api', sessionRouter);
+app.use('/api', sessionRouter,);
+app.use('/api', emailRouter);
 
 app.use((error, req, res, next) => {
   if (error instanceof Exception) {
