@@ -24,7 +24,6 @@ export default class ProductManager {
   static async create(data) {
     const products = await productSchema.find();
 
-    await this.validateRequiredFields(data);
 
     const product = await productSchema.create(data);
 
@@ -49,7 +48,6 @@ export default class ProductManager {
 
   ///ACTUALIZA EL PRODUCTO POR ID
   static async updateById(pid, data) {
-    await this.validateRequiredFields(data);
 
     const product = await productSchema.findById(pid);
     if (!product) {

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import ProductController from "../../controller/products.controller.js";
-import { UserMiddleware } from "../../utils.js";
+import { UserMiddleware, generateProduct } from "../../utils.js";
+
 const router = Router();
 
 const productController = new ProductController(); 
@@ -23,6 +24,16 @@ router.get("/products/:pid", async (req, res, next) => {
     next(error)
   }
 });
+
+
+router.post('/mockingproducts', async (req, res, next) => {
+  const products = await productController.get(req, res);
+  for (let index = 0; index < 100; index++) {
+    await productController.create(generateProduct());
+  }
+  res.status(200).json(products);
+});
+
 
 router.post("/products", UserMiddleware('ADMIN'),async (req, res, next) => {
 

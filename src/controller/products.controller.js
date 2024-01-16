@@ -26,9 +26,8 @@ export default class ProductController{
 
     async get (req, res){
 
-     
         const { first_name, last_name, email, role } = req.session.user;
-
+      
         const { page = 1, limit = 10, category, sort } = req.query;
         const opts = { page, limit };
         if (sort) {

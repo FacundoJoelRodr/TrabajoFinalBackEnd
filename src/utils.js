@@ -5,6 +5,8 @@ import passport from 'passport';
 import { fileURLToPath } from 'url';
 import UserModel from './models/user.model.js';
 import config from './config.js';
+import { faker } from '@faker-js/faker';
+import enumsError from './utils/EnumError.js';
 const __filename = fileURLToPath(import.meta.url);
 
 export const __dirname = path.dirname(__filename);
@@ -95,3 +97,47 @@ export class UnauthorizedException extends Exception {
     super(message, 401);
   }
 }
+
+export default (error, req, res, next) => {
+  console.error(error.cause);
+  switch (error.code) {
+    case enumsError.errorclase:
+      res
+        .status(codigodeError)
+        .json({ status: 'error', message: error.message });
+      break;
+    case enumsError.errorclase:
+      res
+        .status(codigodeError)
+        .json({ status: 'error', message: error.message });
+      break;
+    case enumsError.errorclase:
+      res
+        .status(codigodeError)
+        .json({ status: 'error', message: error.message });
+      break;
+    case enumsError.errorclase:
+      res
+        .status(codigodeError)
+        .json({ status: 'error', message: error.message });
+      break;
+    default:
+      res.status(500).json({ status: 'error', message: 'error desconocido' });
+      break;
+  }
+};
+
+export const generateProduct = () => {
+
+  return {
+    id: faker.database.mongodbObjectId(),
+    title: faker.commerce.productName(),
+    price: faker.commerce.price(),
+    stock: faker.number.int({mix:10000, max:99999}),
+    description: faker.commerce.productDescription(),
+    code: faker.database.mongodbObjectId(),
+    category: faker.commerce.productDescription(),
+  };
+};
+
+

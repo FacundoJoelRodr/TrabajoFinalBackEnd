@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-
+import EnumError from '../utils/EnumError';
 class ProductManager {
   constructor(path) {
     this.products = [];
@@ -13,15 +13,27 @@ class ProductManager {
   async addProduct(productAdd) {
     const { title, code, price, stock, description } = productAdd;
     const products = await this.getJsonFromFile(this.path);
-  
+
     if (!title || !code || !price || !stock || !description) {
-      console.log(`Faltan campos obligatorios`);
-      return null; 
+      customError.createError({
+        name: 'Error creando producto',
+        cause: generatorProductError({
+          title,
+          code,
+          price,
+          stock,
+          description,
+        }),
+        messsage: 'Ocurrio un error al crear un producto nuevo',
+        code: EnumError.INVALID_PARAMS_ERROR
+      })
     }
-  
+
     if (products.some((p) => p.code === code)) {
-      console.log("Este producto ya se encuentra en el array y no se va a agregar");
-      return null; 
+      console.log(
+        'Este producto ya se encuentra en el array y no se va a agregar'
+      );
+      return null;
     } else {
       const id = products.length + 1;
       const newProduct = {
@@ -33,7 +45,7 @@ class ProductManager {
         description,
       };
       products.push(newProduct);
-      console.log("Se agregó correctamente el producto");
+      console.log('Se agregó correctamente el producto');
       if (this.saveJsonToFile(this.path, products)) {
         return newProduct;
       } else {
@@ -41,6 +53,7 @@ class ProductManager {
       }
     }
   }
+
 
   async getProductById(productId) {
     const products = await this.getJsonFromFile(this.path);
