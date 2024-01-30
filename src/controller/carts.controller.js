@@ -1,9 +1,8 @@
-import CartsManagerMongo from "../dao/cartsManagerMongo.js";
-import { NotFoundException } from "../utils.js";
-import ProductSchema from "../models/products.model.js";
-import ticketSchema from "../models/tickets.model.js";
-import cartsModel from "../models/carts.model.js";
-import userModel from "../models/user.model.js";
+import CartsManagerMongo from '../dao/cartsManagerMongo.js';
+import { NotFoundException } from '../utils.js';
+import ProductSchema from '../models/products.model.js';
+import ticketSchema from '../models/tickets.model.js';
+import userModel from '../models/user.model.js';
 export default class CartController {
   async get(req, res) {
     return await CartsManagerMongo.get();
@@ -32,7 +31,7 @@ export default class CartController {
     const cart = await CartsManagerMongo.getById(cid);
 
     if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
+      return res.status(404).json({ error: 'Carrito no encontrado' });
     }
 
     return await CartsManagerMongo.deleteProduct(cid, pid, quantity);
@@ -42,7 +41,7 @@ export default class CartController {
     const cart = await CartsManagerMongo.getById(cid);
 
     if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
+      return res.status(404).json({ error: 'Carrito no encontrado' });
     }
 
     await CartsManagerMongo.deleteProduct(cid, pid, quantity);
@@ -53,7 +52,7 @@ export default class CartController {
     const cart = await CartsManagerMongo.getById(cid);
 
     if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
+      return res.status(404).json({ error: 'Carrito no encontrado' });
     }
 
     await CartsManagerMongo.updateById(cid, pid, quantity);
@@ -64,15 +63,14 @@ export default class CartController {
   async generateTicket(cid) {
     const cart = await CartsManagerMongo.getById(cid);
     if (!cart) {
-      throw new NotFoundException("Carrito no encontrado");
+      throw new NotFoundException('Carrito no encontrado');
     }
 
-   
     const userCart = await userModel.findOne({ carts: cart });
-    console.log(userCart,"use");
+    console.log(userCart, 'use');
     const fechaActual = new Date();
     const fechaFormateada = fechaActual.toLocaleDateString('es-AR');
-  
+
     const ticketProducts = cart.products;
     const totalAmount = this.calculateTotalAmount(ticketProducts);
 
@@ -80,7 +78,7 @@ export default class CartController {
       code: cid,
       purchase_datetime: fechaFormateada,
       amount: totalAmount,
-      purchaser: userCart.email
+      purchaser: userCart.email,
     };
 
     const ticket = await ticketSchema.create(ticketData);
@@ -107,8 +105,8 @@ export default class CartController {
         } else {
           product.stock = stock;
         }
-        await CartsManagerMongo.deleteById(cid)
-        await product.save(); 
+        await CartsManagerMongo.deleteById(cid);
+        await product.save();
       }
     }
     return ticket.id;
