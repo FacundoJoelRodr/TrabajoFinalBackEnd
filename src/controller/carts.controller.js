@@ -1,67 +1,50 @@
-import CartsManagerMongo from '../dao/cartsManagerMongo.js';
+import CartService from '../service/cart.service.js';
+import CartsManagerMongo from "../dao/cartsManagerMongo.js"
 import { NotFoundException } from '../utils.js';
-import ProductSchema from '../models/products.model.js';
-import ticketSchema from '../models/tickets.model.js';
-import userModel from '../models/user.model.js';
+
+const cartService = new CartService();
+
 export default class CartController {
+
   async get(req, res) {
-    return await CartsManagerMongo.get();
+    return await cartService.get();
   }
 
   async create(req, res, body) {
-    return await CartsManagerMongo.create(body);
+    return await cartService.create(body);
   }
 
   async getById(cid) {
-    const cart = await CartsManagerMongo.getById(cid);
+    const cart = await cartService.getById(cid);
     const a = cart.products.map((product) => product.toJSON());
     const b = cart._id;
     return { products: a, cartId: b };
-  }
+}
 
   async updateById(req, res, cid, body) {
-    return await CartsManagerMongo.updateById(cid, body);
+    return await cartService.updateById(cid, body);
   }
 
   async deleteById(req, res, cid) {
-    return await CartsManagerMongo.deleteProductsInCart(cid);
+    return await cartService.deleteProductsInCart(cid);
   }
 
   async deleteProduct(cid, pid, quantity) {
-    const cart = await CartsManagerMongo.getById(cid);
-
-    if (!cart) {
-      return res.status(404).json({ error: 'Carrito no encontrado' });
-    }
-
-    return await CartsManagerMongo.deleteProduct(cid, pid, quantity);
+  
+    return await cartService.deleteProduct(cid, pid, quantity);
   }
 
-  async deleteProduct(cid, pid, quantity) {
-    const cart = await CartsManagerMongo.getById(cid);
-
-    if (!cart) {
-      return res.status(404).json({ error: 'Carrito no encontrado' });
-    }
-
-    await CartsManagerMongo.deleteProduct(cid, pid, quantity);
-    return cart;
-  }
 
   async updateProduct(cid, pid, quantity) {
-    const cart = await CartsManagerMongo.getById(cid);
+    const cart = await cartService.getById(cid);
 
-    if (!cart) {
-      return res.status(404).json({ error: 'Carrito no encontrado' });
-    }
-
-    await CartsManagerMongo.updateById(cid, pid, quantity);
+    await cartService.updateById(cid, pid, quantity);
 
     return cart;
   }
 
   async generateTicket(cid) {
-    const cart = await CartsManagerMongo.getById(cid);
+    const cart = await cartService.getById(cid);
     if (!cart) {
       throw new NotFoundException('Carrito no encontrado');
     }
@@ -82,7 +65,7 @@ export default class CartController {
     };
 
     const ticket = await ticketSchema.create(ticketData);
-    const newCart = await CartsManagerMongo.create();
+    const newCart = await cartService.create();
 
     for (const ticketProduct of ticketProducts) {
       const product = await ProductSchema.findById(ticketProduct.product);
@@ -91,7 +74,7 @@ export default class CartController {
         let stock = (product.stock -= ticketProduct.quantity);
 
         if (stock < 0) {
-          await CartsManagerMongo.updateById(
+          await cartService.updateById(
             newCart.id,
             ticketProduct.product,
             Math.abs(stock)
@@ -105,7 +88,7 @@ export default class CartController {
         } else {
           product.stock = stock;
         }
-        await CartsManagerMongo.deleteById(cid);
+        await cartService.deleteById(cid);
         await product.save();
       }
     }

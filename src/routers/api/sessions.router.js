@@ -26,7 +26,6 @@ router.post('/login', async (req, res) => {
   if (!isPassValid) {
     return res.status(401).json({ message: 'correo o contraseña invalidos' });
   }
-
   const token = tokenGenerator(user);
   res.cookie('access_token', token, { maxAge: 60000, httpOnly: true });
   
@@ -36,6 +35,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/current', AuthMiddleware('jwt'), (req, res) => {
+  console.log(req.user, "current");
   res.status(200).json(req.user);
 });
 

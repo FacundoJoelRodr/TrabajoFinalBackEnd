@@ -20,13 +20,14 @@ export const isValidPassword = (password, user) =>
 export const JWT_SECRET = config.jwt_secret;
 
 export const tokenGenerator = (user) => {
-  const { _id, first_name, last_name, email, role } = user;
+  const { _id, first_name, last_name, email, role, carts } = user;
   const payload = {
     id: _id,
     first_name,
     last_name,
     email,
     role,
+    carts
   };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '60m' });
 };
