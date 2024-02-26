@@ -7,7 +7,7 @@
 </header>
 
 <h1>PRODUCTOS</h1>
-<a href="/api/carts/{{cartId}}" class="btn btn-danger">Ir Al Carrito</a> 
+<a id="cart-link" href="/api/carts/{{cartId}}" data-cart-id="{{cartId}}" class="btn btn-danger">Ir Al Carrito</a> 
 <table id="main" role="grid">
   <tr>
     <th>Titulo</th>
@@ -28,8 +28,8 @@
     <td>{{this.stock}}</td>
     <td>{{this.price}}</td>
     <td>
-     <button data-code="{{this._id}}" class="btn btn-primary">Agregar al carrito</button>
-    </td>
+     <button data-code="{{this._id}}"  class="btn btn-primary add-to-cart" >Agregar al carrito</button>
+      </td>
   </tr>
   {{/each }}
 </table>
@@ -39,4 +39,3 @@
 <a href="{{nextLink}}" role="button" {{#unless hasNextPage}} disabled {{/unless}}>Siguiente</a>
 
 <script src="/js/profile.js"></script>
-<script src="/js/products.js"></script>

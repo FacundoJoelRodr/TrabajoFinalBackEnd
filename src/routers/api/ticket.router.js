@@ -3,10 +3,9 @@ import { Router } from "express";
 
 import CartController from "../../controller/carts.controller.js";
 import mongoose from "mongoose";
-
+import ticketsModel from "../../models/tickets.model.js"
 const router = Router();
 
-const cartController = new CartController();
 //// MONGO
 
 router.post("/carts/:cid/purchase", async (req, res, next) => {
@@ -14,8 +13,7 @@ router.post("/carts/:cid/purchase", async (req, res, next) => {
       const { cid } = req.params;
       const userCart = await userModel.findOne({ carts: cart });
   
-      const ticket = await cartController.generateTicket(cid,userCart);
-      console.log(userCart,"usercartrouter");
+      const ticket = await CartController.generateTicket(cid,userCart);
       res.status(200).json({ ticket });
     } catch (error) {
       next(error) 
@@ -25,7 +23,7 @@ router.post("/carts/:cid/purchase", async (req, res, next) => {
   router.get('/carts/:cid/purchase', async (req, res, next) => {
     try {
       const { params: { cid } } = req;
-      const cart = await cartController.generateTicket(cid);
+      const cart = await CartController.generateTicket(cid);
 
       const ticket = await ticketsModel.findById(cart);
       res.render('tickets', { 

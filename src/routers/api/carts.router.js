@@ -2,18 +2,19 @@ import { Router } from 'express';
 //import AuthMiddleware from '../../middleware/AuthMiddleware.js';
 import CartController from '../../controller/carts.controller.js';
 import ticketsModel from '../../models/tickets.model.js';
+import CartsManagerMongo from "../../dao/cartsManagerMongo.js"
 import mongoose from 'mongoose';
 import { UserMiddleware } from '../../utils.js';
 
 const router = Router();
 
-const cartController = new CartController();
+
 //// MONGO
 
 router.post('/carts', UserMiddleware('USER'), async (req, res, next) => {
   try {
     const { body } = req;
-    await cartController.create(body);
+    await CartController.create(body);
     res.status(200).json(body);
   } catch (error) {
     next(next);
@@ -22,7 +23,7 @@ router.post('/carts', UserMiddleware('USER'), async (req, res, next) => {
 
 router.get('/carts', UserMiddleware('USER'), async (req, res, next) => {
   try {
-    await cartController.get();
+    await CartController.get();
     res.status(200).json();
   } catch (error) {
     next(error);
@@ -35,7 +36,7 @@ router.get('/carts/:cid', UserMiddleware('USER'), async (req, res, next) => {
       params: { cid },
     } = req;
 
-    const cart = await cartController.getById(cid);
+    const cart = await CartController.getById(cid);
     res.render('carts', { products: cart.products, cartId: cart.cartId });
   } catch (error) {
     next(error);
@@ -49,6 +50,7 @@ router.put(
     const {
       params: { cid, pid },
     } = req;
+
     const { quantity } = req.body;
 
     if (quantity === undefined) {
@@ -56,17 +58,12 @@ router.put(
         .status(400)
         .json({ error: 'La cantidad no se proporcionó correctamente' });
     }
-
+  
     try {
-      if (!mongoose.isValidObjectId(cid) || !mongoose.isValidObjectId(pid)) {
-        return res.status(400).json({ error: 'IDs inválidos' });
-      }
-
-      const cart = await cartController.updateProduct(cid, pid, quantity);
-
+      const cart = await CartController.updateProduct(cid, pid, quantity);
       res.status(201).json(cart);
     } catch (error) {
-      next(error);
+      next(error)
     }
   }
 );
@@ -77,7 +74,7 @@ router.put('/carts/:cid', UserMiddleware('USER'), async (req, res, next) => {
       params: { cid },
       body,
     } = req;
-    await cartController.updateById(cid, body);
+    await CartController.updateById(cid, body);
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -91,7 +88,7 @@ router.delete(
       const {
         params: { cid },
       } = req;
-      await cartController.deleteById(cid);
+      await CartController.deleteById(cid);
       res.status(204).end();
     } catch (error) {
       next(error);
@@ -118,7 +115,7 @@ router.delete(
         return res.status(400).json({ error: 'IDs inválidos' });
       }
 
-      const cart = await cartController.deleteProduct(cid, pid);
+      const cart = await CartController.deleteProduct(cid, pid);
 
       res.status(201).json(cart);
     } catch (error) {
@@ -127,12 +124,12 @@ router.delete(
   }
 );
 
-router.post(
+/*router.post(
   '/carts/:cid/purchase', UserMiddleware('USER'),
   async (req, res, next) => {
     try {
       const { cid } = req.params;
-      const ticket = await cartController.generateTicket(cid);
+      const ticket = await CartController.generateTicket(cid);
       res.status(200).json({ ticket });
     } catch (error) {
       next(error);
@@ -148,7 +145,7 @@ router.get(
         params: { cid },
       } = req;
 
-      const cart = await cartController.generateTicket(cid);
+      const cart = await CartController.generateTicket(cid);
       const ticket = await ticketsModel.findById(cart);
 
       const dataToSend = {
@@ -162,6 +159,6 @@ router.get(
       next(error);
     }
   }
-);
+);*/
 
 export default router;

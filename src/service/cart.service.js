@@ -5,29 +5,29 @@ import ticketSchema from '../models/tickets.model.js';
 import userModel from '../models/user.model.js';
 
 export default class cartService {
-    async get(req, res) {
+    static async get(req, res) {
         return await CartsManagerMongo.get();
       }
     
-      async create(req, res, body) {
+      static  async create(req, res, body) {
         return await CartsManagerMongo.create(body);
       }
     
-      async getById(cid) {
+      static async getById(cid) {
     
       const cart = await CartsManagerMongo.getById(cid);
       return cart;
     }
     
-      async updateById(req, res, cid, body) {
-        return await CartsManagerMongo.updateById(cid, body);
+    static  async updateById(req, res, cid, pid, quantity) {
+        return await CartsManagerMongo.updateById( cid,pid, quantity);
       }
     
-      async deleteById(req, res, cid) {
+      static  async deleteById(req, res, cid) {
         return await CartsManagerMongo.deleteProductsInCart(cid);
       }
     
-      async deleteProduct(cid, pid, quantity) {
+      static   async deleteProduct(cid, pid, quantity) {
         const cart = await CartsManagerMongo.getById(cid);
     
         if (!cart) {
@@ -38,7 +38,7 @@ export default class cartService {
       }
     
     
-      async updateProduct(cid, pid, quantity) {
+      static  async updateProduct(cid, pid, quantity) {
         const cart = await CartsManagerMongo.getById(cid);
     
         if (!cart) {
@@ -50,14 +50,13 @@ export default class cartService {
         return cart;
       }
     
-      async generateTicket(cid) {
+      static  async generateTicket(cid) {
         const cart = await CartsManagerMongo.getById(cid);
         if (!cart) {
           throw new NotFoundException('Carrito no encontrado');
         }
     
         const userCart = await userModel.findOne({ carts: cart });
-        console.log(userCart, 'use');
         const fechaActual = new Date();
         const fechaFormateada = fechaActual.toLocaleDateString('es-AR');
     
@@ -73,24 +72,20 @@ export default class cartService {
     
         const ticket = await ticketSchema.create(ticketData);
         const newCart = await CartsManagerMongo.create();
-    
+        console.log(userCart, "userCart ");
         for (const ticketProduct of ticketProducts) {
           const product = await ProductSchema.findById(ticketProduct.product);
-    
+          
           if (product) {
             let stock = (product.stock -= ticketProduct.quantity);
     
             if (stock < 0) {
-              await CartsManagerMongo.updateById(
-                newCart.id,
+            await CartsManagerMongo.updateById(
+                newCart._id,
                 ticketProduct.product,
                 Math.abs(stock)
               );
-              await userModel.findOneAndUpdate(
-                { _id: userId },
-                { cart: newCart.id },
-                { new: true }
-              );
+
               product.stock = 0;
             } else {
               product.stock = stock;
@@ -99,10 +94,17 @@ export default class cartService {
             await product.save();
           }
         }
+
+        await userModel.findOneAndUpdate(
+          { _id: userCart._id },
+          { carts: newCart._id },
+          { new: true }
+        );
+
         return ticket.id;
       }
     
-      calculateTotalAmount(products) {
+      static calculateTotalAmount(products) {
         return products
           .reduce((total, product) => {
             const quantity = Number(product.quantity);

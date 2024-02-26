@@ -1,64 +1,89 @@
 (function () {
+  let cartId; // Declarar cartId fuera de la función fetch
 
-  let cartId;
-    fetch('/api/current')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data,"data");
-        const htmlText = `
+  // Obtener el elemento del enlace del carrito
+  var cartLink = document.getElementById('cart-link');
+
+  // Obtener el valor del atributo data-cart-id
+  var cartId1 = cartLink.getAttribute('data-cart-id');
+  cartId = cartId1; // Asignar el valor de cartId1 a cartId
+
+  // Mostrar el valor de cartId en la consola (solo para propósitos de demostración)
+  console.log('El valor de cartId es:', cartId);
+
+  function actualizarPerfil(data, cartId) {
+    const htmlText = `
         <p>Nombre: ${data.first_name}</p>
         <p>Apellido: ${data.last_name}</p>
         <p>Rol: ${data.role}</p>
         <p>Email: ${data.email}</p>
-        <p>carrito: ${data.carts}</p>`;
-        cartId = data.carts;
-        const span = document.getElementById('profile-span');
-        span.innerHTML = htmlText;
+        <p>Carrito: ${cartId}</p>`;
+    const span = document.getElementById('profile-span');
+    if (span) { // Verificar si el elemento con el id 'profile-span' existe
+      span.innerHTML = htmlText;
+    }
+  }
+  
+  function obtenerDatosPerfil(cartId) {
+    fetch('/api/current')
+      .then((response) => response.json())
+      .then((data) => {
+        actualizarPerfil(data, cartId);
+        
+        console.log(cartId, "data2");
+
+        // Actualizar el enlace "Ir al Carrito" con el nuevo cartId
+        const cartLink = document.getElementById('cart-link');
+        if (cartLink) { // Verificar si el elemento con el id 'cart-link' existe
+          cartLink.href = `/api/carts/${cartId}`;
+        }
       })
       .catch((error) => {
         console.log('error', error);
       });
+  }
 
+  // Definir la función addToCart después de la función fetch
+  function addToCart(productId, cartId) {
+    // Verifica si cartId es válido antes de construir la URL
+    if (!cartId) {
+      console.error('El cartId no es válido');
+      return;
+    }
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const addToCartButtons = document.querySelectorAll('.btn-primary');
-        
-        addToCartButtons.forEach(button => {
-          button.addEventListener('click', function(event) {
-            const productId = event.target.dataset.code; // Obtener el ID del producto desde el botón
-            addToCart(productId);
-          });
-        });
-      
-        function addToCart(productId) {
-          fetch(`/api/carts/${cartId}/product/${productId}`, {
-            method: 'PUT', // Ajusta el método HTTP según tu implementación
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            // Puedes enviar más información si es necesario en el cuerpo de la solicitud
-            body: JSON.stringify({ quantity: 1 }), // Aquí asumimos que siempre se agrega un producto con una cantidad de 1
-          })
-          .then(response => {
-            if (response.ok) {
-              // Producto agregado exitosamente al carrito, puedes mostrar un mensaje o actualizar la página
-              alert('Producto agregado al carrito');
-              // Aquí puedes hacer alguna acción adicional si es necesario, como redirigir al usuario al carrito
-              window.location.href = `/api/carts/${data.carts}`;
-            } else {
-              // Manejar errores si la solicitud no se completó correctamente
-              alert('Error al agregar el producto al carrito');
-            }
-          })
-          .catch(error => {
-            // Manejar errores de red u otros errores
-            console.error('Error:', error);
-            alert('Hubo un error al procesar su solicitud');
-          });
+    fetch(`/api/carts/${cartId}/product/${productId}`, {
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ quantity: 1 }),
+    })
+      .then(response => {
+        if (response.ok) {
+          alert('Producto agregado al carrito');
+          window.location.href = `/api/carts/${cartId}`;
+        } else {
+          alert('Error al agregar el producto al carrito');
         }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error al procesar su solicitud con id');
       });
+  }
 
-      
+  document.addEventListener('DOMContentLoaded', () => {
+    obtenerDatosPerfil(cartId);
 
-  })();
-  
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+
+    addToCartButtons.forEach(button => {
+      button.addEventListener('click', function (event) {
+        const productId = event.target.dataset.code; // Obtener el ID del producto desde el botón
+        console.log('productId', productId);
+        console.log('cartId', cartId); // Verificar que el cartId es correcto
+        addToCart(productId, cartId);
+      });
+    });
+  });
+})(); 

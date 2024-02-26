@@ -8,7 +8,8 @@ import { __dirname } from './utils.js';
 import productRouter from './routers/api/products.router.js';
 import cartRouter from './routers/api/carts.router.js';
 import emailRouter from './routers/api/email.router.js';
-
+import ticketRouter from "./routers/api/ticket.router.js"
+import { addLogger } from './config/logger.js';
 import viewSessionRouter from './routers/views/views.router.js';
 import sessionRouter from './routers/api/sessions.router.js';
 import User from './models/user.model.js';
@@ -60,7 +61,7 @@ const createAdminUser = async () => {
 };
 
 createAdminUser();
-
+app.use(addLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -78,8 +79,9 @@ app.use(passport.session());
 app.use('/api', productRouter);
 app.use('/api', cartRouter);
 app.use('/api', viewSessionRouter);
-app.use('/api', sessionRouter,);
+app.use('/api', sessionRouter);
 app.use('/api', emailRouter);
+app.use('/api', ticketRouter);
 
 app.use((error, req, res, next) => {
   if (error instanceof Exception) {

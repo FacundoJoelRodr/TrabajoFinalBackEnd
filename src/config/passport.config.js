@@ -17,7 +17,7 @@ const githubOpts = {
   clientSecret: config.secret_client,
   callbackURL: config.callbackURL,
 };
-function cookieExtractor(req) {
+export function cookieExtractor(req) {
   let token = null;
   if (req && req.cookies) {
     token = req.cookies.access_token;
@@ -25,7 +25,7 @@ function cookieExtractor(req) {
   return token;
 }
 
-const cartController = new  CartController();
+
 export const init = () => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -57,8 +57,10 @@ export const init = () => {
     'register',
     new LocalStrategy(opts, async (req, email, password, done) => {
       try {
+
         const user = await UserModel.findOne({ email });
-        const cartUser = await cartController.create()
+        console.log(user, "user");
+        const cartUser = await CartController.create()
         if (user) {
           return done(null, false, { message: 'User already registered' });
         }
