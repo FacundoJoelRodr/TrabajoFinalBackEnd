@@ -1,13 +1,13 @@
 <header>
-<article>
-  <h1>Perfil</h1>
-  <span id="profile-span"></span>
-  <a href="/api/logout" class="btn btn-danger">Cerrar sesión</a>  
-</article>
+  <article>
+    <h1>Perfil</h1>
+    <span id="profile-span"></span>
+    <a href="/api/logout" class="btn btn-danger">Cerrar sesión</a>
+  </article>
 </header>
 
 <h1>PRODUCTOS</h1>
-<a id="cart-link" href="/api/carts/{{cartId}}" data-cart-id="{{cartId}}" class="btn btn-danger">Ir Al Carrito</a> 
+<a id="cart-link" href="/api/carts/{{cartId}}" data-cart-id="{{cartId}}" class="btn btn-danger">Ir Al Carrito</a>
 <table id="main" role="grid">
   <tr>
     <th>Titulo</th>
@@ -16,7 +16,8 @@
     <th>Categoria</th>
     <th>Stock</th>
     <th>Precio</th>
-    <th>Acción</th> 
+    <th>cantidad</th>
+    <th>Acción</th>
   </tr>
 
   {{#each payload}}
@@ -28,8 +29,11 @@
     <td>{{this.stock}}</td>
     <td>{{this.price}}</td>
     <td>
-     <button data-code="{{this._id}}"  class="btn btn-primary add-to-cart" >Agregar al carrito</button>
-      </td>
+      <input type="number" id="quantity-{{this._id}}" value="1" min="1" max="{{this.stock}}">
+    </td>
+    <td>
+      <button data-code="{{this._id}}" class="btn btn-primary add-to-cart">Agregar al carrito</button>
+    </td>
   </tr>
   {{/each }}
 </table>

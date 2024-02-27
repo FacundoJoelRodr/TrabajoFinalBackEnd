@@ -9,6 +9,7 @@ import productRouter from './routers/api/products.router.js';
 import cartRouter from './routers/api/carts.router.js';
 import emailRouter from './routers/api/email.router.js';
 import ticketRouter from "./routers/api/ticket.router.js"
+import userRouter from "./routers/api/user.router.js"
 import { addLogger } from './config/logger.js';
 import viewSessionRouter from './routers/views/views.router.js';
 import sessionRouter from './routers/api/sessions.router.js';
@@ -82,6 +83,7 @@ app.use('/api', viewSessionRouter);
 app.use('/api', sessionRouter);
 app.use('/api', emailRouter);
 app.use('/api', ticketRouter);
+app.use('/api', userRouter);
 
 app.use((error, req, res, next) => {
   if (error instanceof Exception) {

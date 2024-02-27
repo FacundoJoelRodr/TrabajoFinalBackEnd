@@ -1,4 +1,3 @@
-import CartsManagerMongo from "../dao/cartsManagerMongo.js";
 import userModel from "../models/user.model.js";
 import userService from '../service/user.service.js';
 import Exception from '../utils.js';

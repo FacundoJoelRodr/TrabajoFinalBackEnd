@@ -17,7 +17,7 @@ const githubOpts = {
   clientSecret: config.secret_client,
   callbackURL: config.callbackURL,
 };
-export function cookieExtractor(req) {
+ function cookieExtractor(req) {
   let token = null;
   if (req && req.cookies) {
     token = req.cookies.access_token;
@@ -57,9 +57,7 @@ export const init = () => {
     'register',
     new LocalStrategy(opts, async (req, email, password, done) => {
       try {
-
         const user = await UserModel.findOne({ email });
-        console.log(user, "user");
         const cartUser = await CartController.create()
         if (user) {
           return done(null, false, { message: 'User already registered' });
@@ -70,7 +68,6 @@ export const init = () => {
           password: createHash(password),
           carts: cartUser.id
         });
-        console.log(newUser, 'newuser');
         done(null, newUser);
       } catch (error) {
         return done(new Error('Error al registrar'), error.message);
@@ -91,7 +88,6 @@ export const init = () => {
         if (!isPassValid) {
           return done(new Error('Email y contraseña invalidos!'));
         }
-        console.log(user, 'user');
         done(null, user);
       } catch (error) {
         return done(new Error('Error al Iniciar Sesion'), error.message);

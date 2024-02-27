@@ -1,7 +1,7 @@
 import CartsManagerMongo from '../dao/cartsManagerMongo.js';
 import { NotFoundException } from '../utils.js';
 import ProductSchema from '../models/products.model.js';
-import ticketSchema from '../models/tickets.model.js';
+import ticketController from "../controller/tickets.controller.js"
 import userModel from '../models/user.model.js';
 
 export default class cartService {
@@ -70,9 +70,9 @@ export default class cartService {
           purchaser: userCart.email,
         };
     
-        const ticket = await ticketSchema.create(ticketData);
+        const ticket = await ticketController.create(ticketData);
         const newCart = await CartsManagerMongo.create();
-        console.log(userCart, "userCart ");
+        console.log(ticket, "ticket ");
         for (const ticketProduct of ticketProducts) {
           const product = await ProductSchema.findById(ticketProduct.product);
           

@@ -1,8 +1,4 @@
 import CartService from '../service/cart.service.js';
-import CartsManagerMongo from "../dao/cartsManagerMongo.js"
-import { NotFoundException } from '../utils.js';
-import userModel from "../models/user.model.js"
-import ticketSchema from "../models/tickets.model.js"
 
 export default class CartController {
 

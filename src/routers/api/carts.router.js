@@ -1,8 +1,5 @@
 import { Router } from 'express';
-//import AuthMiddleware from '../../middleware/AuthMiddleware.js';
 import CartController from '../../controller/carts.controller.js';
-import ticketsModel from '../../models/tickets.model.js';
-import CartsManagerMongo from "../../dao/cartsManagerMongo.js"
 import mongoose from 'mongoose';
 import { UserMiddleware } from '../../utils.js';
 
@@ -124,41 +121,6 @@ router.delete(
   }
 );
 
-/*router.post(
-  '/carts/:cid/purchase', UserMiddleware('USER'),
-  async (req, res, next) => {
-    try {
-      const { cid } = req.params;
-      const ticket = await CartController.generateTicket(cid);
-      res.status(200).json({ ticket });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
 
-router.get(
-  '/carts/:cid/purchase', UserMiddleware('USER'),
-  async ( req, res, next) => {
-    try {
-      const {
-        params: { cid },
-      } = req;
-
-      const cart = await CartController.generateTicket(cid);
-      const ticket = await ticketsModel.findById(cart);
-
-      const dataToSend = {
-        code: ticket.code || 'No disponible',
-        purchase_datetime: ticket.purchase_datetime || 'No disponible',
-        purchaser: ticket.purchaser || 'No disponible',
-        amount: ticket.amount || 'No disponible',
-      };
-      res.render('tickets', dataToSend);
-    } catch (error) {
-      next(error);
-    }
-  }
-);*/
 
 export default router;

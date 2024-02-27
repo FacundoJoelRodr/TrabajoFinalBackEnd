@@ -25,8 +25,6 @@ export default class ProductController{
 
 
     async get (req, res){
-
-        const { first_name, last_name, email, role } = req.session.user;
       
         const { page = 1, limit = 10, category, sort } = req.query;
         const opts = { page, limit };
@@ -37,12 +35,15 @@ export default class ProductController{
         if (category) {
             criteria.category = category;
         }
+      
         const cart = await cartsModel.findOne()
         const cartId = cart._id;
         const products = await productsModel.paginate(criteria, opts);
         const build = buildResponse({ ...products, category });
         const user = req.session.user;
+        console.log(user,"user");
         const dataForRendering = { ...build, user, cartId };
+
         return dataForRendering;
 
     }
@@ -56,8 +57,6 @@ export default class ProductController{
 
 
     async getById (pid){
-
-
 
     const product = await ProductManager.getById(pid);
         return product

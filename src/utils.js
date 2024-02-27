@@ -45,6 +45,21 @@ export const jwtAuth = (req, res, next) => {
     next();
   });
 };
+
+
+
+export const verificarToken = (token, secreto) => {
+  try {
+      const decoded = jwt.verify(token, secreto);
+      console.log('Token decodificado:', decoded);
+      return decoded;
+  } catch (err) {
+      console.error('Error al decodificar el token:', err);
+      throw err;
+  }
+};
+
+
 export const AuthMiddleware = (strategy) => (req, res, next) => {
   passport.authenticate(strategy, function (error, user, info) {
     if (error) {

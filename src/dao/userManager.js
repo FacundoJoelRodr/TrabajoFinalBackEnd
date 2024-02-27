@@ -20,6 +20,15 @@ export default class userManager {
     }
   }
 
+  static async getByEmail(email) {
+    try {
+      const user = await userModel.findOne({email});
+      return user;
+    } catch (error) {
+      throw new Exception(error.message, error.status);
+    }
+  }
+
   static async createUser(userData) {
     try {
       const user = await userModel.create(userData);

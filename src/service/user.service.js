@@ -18,6 +18,18 @@ export default class userService {
       if (!user) {
         throw new Exception('No existe el usuario', 404);
       }
+      return new userDto(user);
+    } catch (error) {
+      throw new Exception(error.message, error.status);
+    }
+  }
+
+  static async getUserByEmail(email) {
+    try {
+      const user = await userManager.getByEmail(email);
+      if (!user) {
+        throw new Exception('No existe el usuario', 404);
+      }
       return user;
     } catch (error) {
       throw new Exception(error.message, error.status);
