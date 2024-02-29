@@ -51,7 +51,6 @@ export const jwtAuth = (req, res, next) => {
 export const verificarToken = (token, secreto) => {
   try {
       const decoded = jwt.verify(token, secreto);
-      console.log('Token decodificado:', decoded);
       return decoded;
   } catch (err) {
       console.error('Error al decodificar el token:', err);

@@ -1,6 +1,8 @@
 import productsModel from "../models/products.model.js"
 import ProductManager from "../dao/ProductManagerMongo.js";
 import cartsModel from "../models/carts.model.js"
+import UserController from "../controller/users.controller.js"
+import {jwtAuth, JWT_SECRET, verificarToken } from "../utils.js"
 const buildResponse = (data) => {
   return {
     status: "success",
@@ -21,7 +23,8 @@ const buildResponse = (data) => {
 };
 
 
-export default class ProductController{
+
+  export default class ProductController{
 
 
     async get (req, res){
@@ -35,18 +38,25 @@ export default class ProductController{
         if (category) {
             criteria.category = category;
         }
-      
-        const cart = await cartsModel.findOne()
-        const cartId = cart._id;
+
         const products = await productsModel.paginate(criteria, opts);
         const build = buildResponse({ ...products, category });
         const user = req.session.user;
-        console.log(user,"user");
-        const dataForRendering = { ...build, user, cartId };
-
-        return dataForRendering;
-
+        console.log(user,"user controller");
+        try {
+          const decodedToken = verificarToken(user, JWT_SECRET);
+          console.log(decodedToken,"user decodedToken");
+          const newuser = await UserController.getById(decodedToken.id)
+          const cartId = newuser.carts;
+          const dataForRendering = { ...build, user, cartId };
+          console.log(dataForRendering,"dataForRendering");
+          return dataForRendering;
+        } catch (err) {
+          console.log(err,"error");
+      }          
     }
+
+
 
 
     async create (body,req, res){

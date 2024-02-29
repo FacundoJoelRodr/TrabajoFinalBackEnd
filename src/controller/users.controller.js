@@ -1,8 +1,7 @@
 import userModel from "../models/user.model.js";
 import userService from '../service/user.service.js';
-import Exception from '../utils.js';
 
-import { createHash } from "../utils.js";
+import { createHash,Exception  } from "../utils.js";
 export default class UserController {
 
   static async get(query = {}) {
