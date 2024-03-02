@@ -1,9 +1,9 @@
 import userService from "../service/user.service.js";
-import EmailService from "../service/email.service.js";
+import emailService from "../service/email.service.js";
 import { Exception } from "../utils.js";
 import UserDto from "../dto/user.dto.js";
 
-export default class UserController {
+export default class UserController {s
   static async get(query = {}) {
     try {
       return await userService.getUsers(query);
@@ -30,6 +30,10 @@ export default class UserController {
       }
 
       const user = await userService.createUser(userData);
+     
+
+     await emailService.sendWelcomeEmail(user);
+      
       return user;
     } catch (error) {
       throw new Exception(error.message, error.status);

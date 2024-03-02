@@ -66,7 +66,6 @@ export default class cartService {
       if (!cart) {
         throw new NotFoundException("Carrito no encontrado");
       }
-o
       const userCart = await UserController.getByCart(cart._id);
       const fechaActual = new Date();
       const fechaFormateada = fechaActual.toLocaleDateString("es-AR");

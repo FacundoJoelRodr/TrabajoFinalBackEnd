@@ -2,21 +2,21 @@ import nodemailer from 'nodemailer';
 import config from '../config.js';
 
 class EmailService {
-  static #instance = null;
-   constructor() {
-    this.transport = nodemailer.createTransport({
-      service: config.mail.service,
-      port: config.mail.port,
-      auth: {
-        user: config.mail.user,
-        password: config.mail.pass,
-      },
-    });
-  }
 
- static sendEmail(to, subject, html, attachments = []) {
+  constructor() {
+    this.transport = nodemailer.createTransport(
+      {
+        service: config.mail.service,
+        auth: {
+          user: config.mail.user,
+          pass: config.mail.pass,
+        },
+      }
+    );
+  }
+  sendEmail(to, subject, html, attachments = []) {
     return this.transport.sendMail({
-      from: config.userEmail,
+      from: config.mail.user,
       to,
       subject,
       html,
@@ -24,19 +24,15 @@ class EmailService {
     });
   }
 
-  static sendWelcomeEmail(user) {
+  sendWelcomeEmail(user) {
+    console.log(user.email,"user mail");
+    console.log(user.first_name,"user mail");
     return this.sendEmail(
-      user.email, 
-      `Bienvendio ${user.first_name}!`,
-      `<h1>Bienvenido ${user.first_name} ya se creo correctamente tu usuario, ya esta disponible para realizar compras</h1>`,
+      user.email,
+      `Registro Exitoso!!😁`,
+      `<h4>Hola ${user.first_name} te damos la bienvenida a nuestro emprendimiento espero que lo disfrutes</h4><br><p>Ya estas habilitado para hacer compras!</p>`
+      
     );
-  }
-
-  static getInstance() {
-    if (!EmailService.#instance) {
-      EmailService.#instance = new EmailService();
-    }
-    return EmailService.#instance;
   }
 }
 

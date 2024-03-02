@@ -5,14 +5,12 @@ const router = Router();
 
 router.get('/sendEmail', async (req, res, next) => {
   try {
-    
-    const result = emailService.sendWelcomeEmail(
-      'soyfacujoelrodriguez@gmail.com',
-      'correo de prueba',
-      ` <h1>HOLA</h1> `
-    );
-    console.log(result,"hola");
-    res.status(200).json({ message: 'correo enviado correctamente' });
+    const result = await emailService.sendWelcomeEmail({
+      email: 'natalia.stampella@gmail.com',
+      first_name: 'Natalia!'
+    });
+    console.log(result, "hola");
+    res.status(200).json({ message: 'Correo enviado correctamente' });
   } catch (error) {
     next(error);
   }
