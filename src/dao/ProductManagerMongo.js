@@ -1,5 +1,5 @@
 import productSchema from '../models/products.model.js';
-import { Exception, NotFoundException,BadRequestException } from '../utils.js';
+import { Exception, NotFoundException, BadRequestException } from '../utils.js';
 
 export default class ProductManager {
   static async validateRequiredFields(data) {
@@ -20,12 +20,16 @@ export default class ProductManager {
     }
   }
 
+  static async paginate(criteria, opts) {
+    const paginate = await productSchema.paginate(criteria, opts);
+    return paginate;
+  }
+
   //CREAR PRODUCTO
-  static async create(data) {
+  static async create(body) {
     const products = await productSchema.find();
 
-
-    const product = await productSchema.create(data);
+    const product = await productSchema.create(body);
 
     if (products.some((p) => p.code === code)) {
       throw new BadRequestException(
@@ -48,7 +52,6 @@ export default class ProductManager {
 
   ///ACTUALIZA EL PRODUCTO POR ID
   static async updateById(pid, data) {
-
     const product = await productSchema.findById(pid);
     if (!product) {
       throw new NotFoundException('Not Found');

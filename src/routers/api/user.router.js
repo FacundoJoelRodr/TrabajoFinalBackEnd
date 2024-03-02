@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import UserController from '../../controller/users.controller.js';
-
 import { UserMiddleware } from '../../utils.js';
 
 const router = Router();
@@ -8,12 +7,35 @@ const router = Router();
 router.get('/users', async (req, res, next) => {
     try {
       const users = await UserController.get();
+      console.log(users,"users rpouter");
       res.status(200).json(users);
     } catch (error) {
       next(error);
     }
   });
 
+  router.get('/users/mails', async (req, res, next) => {
+    try {
+      const email = "adminCoder@coder.com"
+      const users = await UserController.findUserByEmail(email);
+      res.status(200).json(users);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  
+  router.post('/users', async (req, res, next) => {
+    try {
+      const { body } = req;
+      const users = await UserController.createUser(body);
+      res.status(200).json(users);
+    } catch (error) {
+     next(error)
+    }
+  });
+
+  
 router.get("/users/:uid", async (req, res, next) => {
     try {
       const { params: { uid } } = req;

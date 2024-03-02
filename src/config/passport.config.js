@@ -3,9 +3,9 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import { createHash, isValidPassword, JWT_SECRET } from '../utils.js';
-import UserModel from '../models/user.model.js';
 import config from '../config.js';
 import CartController from '../controller/carts.controller.js';
+import UserController from '../controller/users.controller.js';
 
 const opts = {
   usernameField: 'email',
@@ -33,7 +33,7 @@ export const init = () => {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = await UserModel.findById(id);
+      const user = await UserController.getById(id);
       done(null, user);
     } catch (error) {
       done(error);
@@ -57,17 +57,18 @@ export const init = () => {
     'register',
     new LocalStrategy(opts, async (req, email, password, done) => {
       try {
-        const user = await UserModel.findOne({ email });
         const cartUser = await CartController.create()
-        if (user) {
-          return done(null, false, { message: 'User already registered' });
-        }
 
-        const newUser = await UserModel.create({
+        const passwordHash = createHash(password)
+    
+        const newContent = {
           ...req.body,
-          password: createHash(password),
+          password: passwordHash,
           carts: cartUser.id
-        });
+        }
+     
+        const newUser = await UserController.createUser(newContent);
+
         done(null, newUser);
       } catch (error) {
         return done(new Error('Error al registrar'), error.message);
@@ -79,7 +80,7 @@ export const init = () => {
     'login',
     new LocalStrategy(opts, async (req, email, password, done) => {
       try {
-        const user = await UserModel.findOne({ email });
+        const user = await UserController.getByEmail({ email });
 
         if (!user) {
           return done(new Error('Email y contraseña invalidos'));
@@ -101,7 +102,7 @@ export const init = () => {
       githubOpts,
       async (accessToken, refreshToken, profile, done) => {
         const email = profile._json.email;
-        let user = await UserModel.findOne({ email });
+        let user = await UserController.getByEmail({ email });
         if (user) {
           return done(null, user);
         }
@@ -115,7 +116,7 @@ export const init = () => {
           role: 'USER',
           provider: 'Github',
         };
-        const newUser = await UserModel.create(user);
+        const newUser = await CartController.createUser(user);
         done(null, newUser);
       }
     )

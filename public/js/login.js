@@ -15,8 +15,6 @@
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data, 'data');
-          console.log(document.cookie, 'cookie');
           alert("Login Successfully")
           window.location.href = '../../src/views/products.handlebars' 
           //localStorage.setItem('token', data.access_token);

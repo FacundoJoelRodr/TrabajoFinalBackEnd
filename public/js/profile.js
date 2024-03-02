@@ -6,8 +6,6 @@
   var cartId1 = cartLink.getAttribute('data-cart-id');
   cartId = cartId1;
 
-  console.log('El valor de cartId es:', cartId);
-
   function actualizarPerfil(data, cartId) {
     const htmlText = `
         <p>Nombre: ${data.first_name}</p>
@@ -26,10 +24,6 @@
       .then((response) => response.json())
       .then((data) => {
         actualizarPerfil(data, cartId);
-        
-        console.log(cartId, "data2");
-
-        
         const cartLink = document.getElementById('cart-link');
         if (cartLink) { 
           cartLink.href = `/api/carts/${cartId}`;
@@ -78,8 +72,6 @@
     addToCartButtons.forEach(button => {
       button.addEventListener('click', function (event) {
         const productId = event.target.dataset.code; 
-        console.log('productId', productId);
-        console.log('cartId', cartId); 
         addToCart(productId, cartId);
       });
     });

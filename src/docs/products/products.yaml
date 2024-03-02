@@ -1,0 +1,219 @@
+paths: 
+  /api/products:
+    get:
+      summary: Listar Productos
+      tags:
+        -Products
+      responses:
+        200:
+          description: Los productos fueron obtenidos correctamente.
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                $ref: '#/components/schemas/Products'
+        400:
+          description: Los producto no sean podido obetener
+        500:
+          description: Error Interno en el servidor
+    post:
+      summary: Crear Productos
+      tags:
+        -Products
+      requestBody:
+        required: true
+        content:
+          aplication/json:
+            schame:
+              $ref: '#/components/requestBodies/createProduct'
+      responses:
+        200:
+          description: El producto fue creado exitosamente.
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                $ref: '#/components/schemas/Products'
+        400:
+          description: valores de inputs incorrectos
+        500:
+          description: Error Interno en el servidor
+      
+  /api/products/{pid}:
+    get:
+      summary: Permite obtener un producto por su id.
+      tags:
+        -Products
+      parameters:
+        -in: path
+        name: pid
+        required: true
+        description: Id del producto.
+        schema:
+          type: string
+      responses:
+        200:
+          description: El producto fue obtenido exitosamente.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        400:
+          description: El producto no se pudo obtener.
+        500:
+          description:  Error Interno en el servidor.
+    put: 
+      summary: Permite actualizar un producto.
+      tags:
+        -Products
+      parameters:
+        -in: path
+        name: pid
+        required: true
+        description: Id del producto.
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          aplication/json:
+            schame:
+              $ref: '#/components/requestBodies/updateProduct'
+      responses:
+        200:
+          description: El producto fue actualizado exitosamente.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        400:
+          description: El producto no se pudo obtener.
+        500:
+          description:  Error Interno en el servidor.   
+    delete:
+      summary: Permite borrar un producto por su id.
+      tags:
+        -Products
+      parameters:
+        -in: path
+        name: pid
+        required: true
+        description: Id del producto.
+        schema:
+          type: string
+      responses:
+        200:
+          description: El producto fue eliminado exitosamente.
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        400:
+          description: El producto no se encontro.
+        500:
+          description:  Error Interno en el servidor.
+
+componets:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Id del producto generado por MongoDb.
+        title:
+          type: string
+          description: Titulo del producto.
+        price:
+          type: Number
+          description: Precio del producto.
+        code:
+          type: string
+          description: Codigo del producto generado por MongoDb.
+        stock:
+          type: Number
+          description: Stock del producto.
+        description:
+          type: String
+          description: Descripcion del producto.
+        category:
+          type: String
+          description: Categoria del producto.
+        Owner:
+          type: String
+          description: Creador del producto.
+      example: 
+        _id: 5f8a0b9d9bbee70113c1aebc
+        title: "Camiseta"
+        price: 19.99
+        code: "CAM123"
+        stock: 100
+        description: "Camiseta de algodón de manga corta"
+        category: "Ropa"
+
+  requestBody:
+    createProduct:
+     type: object
+      properties:
+        title:
+          type: string
+          description: Titulo del producto.
+        price:
+          type: Number
+          description: Precio del producto.
+        code:
+          type: string
+          description: Codigo del producto generado por MongoDb.
+        stock:
+          type: Number
+          description: Stock del producto.
+        description:
+          type: String
+          description: Descripcion del producto.
+        category:
+          type: String
+          description: Categoria del producto.
+        Owner:
+          type: String
+          description: Creador del producto.
+      example: 
+        title: "Camiseta"
+        price: 19.99
+        code: "CAM123"
+        stock: 100
+        description: "Camiseta de algodón de manga corta"
+        category: "Ropa"
+
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Titulo del producto.
+        price:
+          type: Number
+          description: Precio del producto.
+        code:
+          type: string
+          description: Codigo del producto generado por MongoDb.
+        stock:
+          type: Number
+          description: Stock del producto.
+        description:
+          type: String
+          description: Descripcion del producto.
+        category:
+          type: String
+          description: Categoria del producto.
+        Owner:
+          type: String
+          description: Creador del producto.
+      example: 
+        title: "Camiseta"
+        price: 19.99
+        code: "CAM123"
+        stock: 100
+        description: "Camiseta de algodón de manga corta"
+        category: "Ropa"

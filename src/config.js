@@ -8,6 +8,10 @@ export default {
   mongoDB_URL: process.env.MONGODB_URL,
   session_secret: process.env.SESSION_SECRET,
   jwt_secret: process.env.JWT_SECRET,
-  user_email: process.env.GMAIL_EMAIL,
-  user_pass: process.env.GMAIL_PASS,
+  mail: {
+    service: process.env.EMAIL_SERVICE || 'gmail',
+    port: process.env.EMAIL_PORT || 587,
+    user: process.env.GMAIL_EMAIL,
+    pass: process.env.GMAIL_PASS || 'gmail',
+  },
 };

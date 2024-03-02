@@ -8,7 +8,7 @@ const router = Router();
 
 //// MONGO
 
-router.post('/carts', UserMiddleware('USER'), async (req, res, next) => {
+router.post('/carts', async (req, res, next) => {
   try {
     const { body } = req;
     await CartController.create(body);

@@ -1,12 +1,11 @@
 import CartService from '../service/cart.service.js';
 
 export default class CartController {
-
-  static async get(req, res) {
+  static async get() {
     return await CartService.get();
   }
 
-  static async create(req, res, body) {
+  static async create(body) {
     return await CartService.create(body);
   }
 
@@ -15,21 +14,19 @@ export default class CartController {
     const a = cart.products.map((product) => product.toJSON());
     const b = cart._id;
     return { products: a, cartId: b };
-}
+  }
 
-static async updateById(req, res, cid, body  ) {
+  static async updateById(cid, body) {
     return await CartService.updateById(cid, body);
   }
 
-  static async deleteById(req, res, cid) {
+  static async deleteById(cid) {
     return await CartService.deleteProductsInCart(cid);
   }
 
   static async deleteProduct(cid, pid, quantity) {
-  
     return await CartService.deleteProduct(cid, pid, quantity);
   }
-
 
   static async updateProduct(cid, pid, quantity) {
     const cart = await CartService.getById(cid);
@@ -40,7 +37,9 @@ static async updateById(req, res, cid, body  ) {
 
   static async generateTicket(cid) {
     return await CartService.generateTicket(cid);
-    
   }
-
+  static async findOne() {
+    const cart = await CartService.findOne();
+    return cart;
+  }
 }

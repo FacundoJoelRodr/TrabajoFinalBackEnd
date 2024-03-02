@@ -6,18 +6,18 @@ import {
   tokenGenerator,
   AuthMiddleware,
 } from '../../utils.js';
-import UserModel from '../../models/user.model.js';
 import UserController from '../../controller/users.controller.js';
 
 const router = Router();
 
-const userController = new UserController();
 
 router.post('/login', async (req, res) => {
   const {
     body: { email, password },
   } = req;
-  const user = await UserModel.findOne({ email });
+ 
+  const user = await UserController.getByEmail(email);
+
   if (!user) {
     return res.status(401).json({ message: 'correo o contraseña invalidos' });
   }
@@ -34,7 +34,6 @@ router.post('/login', async (req, res) => {
 
 router.get('/current', AuthMiddleware('jwt'), (req, res) => {
   const user = req.user;
-  console.log(user,"user");
   res.status(200).json(req.user);
 });
 
@@ -52,7 +51,8 @@ router.post(
   '/register',
   passport.authenticate('register', { failureRedirect: '/register' }),
   (req, res) => {
-    res.redirect('/api/login');
+    const user = req.user;
+   res.redirect('/api/login');
   }
 );
 
@@ -81,7 +81,7 @@ router.get(
 
 router.post('/recovery-password', async (req, res, next) => {
   try {
-    await userController.recoveryPassword(req);
+    await UserController.recoveryPassword(req);
     res.redirect('/api/login');
   } catch (error) {
     next(error);
@@ -90,7 +90,7 @@ router.post('/recovery-password', async (req, res, next) => {
 
 router.get('/logout', async (req, res) => {
   try {
-    await userController.destroySession();
+    await UserController.destroySession();
     res.redirect('/api/login');
   } catch (error) {
     next(error);

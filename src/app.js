@@ -1,3 +1,4 @@
+
 import express from 'express';
 import passport from 'passport';
 import expressSession from 'express-session';
@@ -8,8 +9,8 @@ import { __dirname } from './utils.js';
 import productRouter from './routers/api/products.router.js';
 import cartRouter from './routers/api/carts.router.js';
 import emailRouter from './routers/api/email.router.js';
-import ticketRouter from "./routers/api/ticket.router.js"
-import userRouter from "./routers/api/user.router.js"
+import ticketRouter from './routers/api/ticket.router.js';
+import userRouter from './routers/api/user.router.js';
 import { addLogger } from './config/logger.js';
 import viewSessionRouter from './routers/views/views.router.js';
 import sessionRouter from './routers/api/sessions.router.js';
@@ -19,6 +20,9 @@ import config from './config.js';
 import { Exception } from './utils.js';
 import { URI } from './db/mongodb.js';
 import cookieParser from 'cookie-parser';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
 const app = express();
 
 const SESSION_SECRET = config.session_secret;
@@ -77,14 +81,37 @@ initPassaportConfig();
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api', productRouter);
-app.use('/api', cartRouter);
+const swagggerOptions = {
+  definition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'Cisco',
+      description: 'esta es la documetacion',
+    },
+  },
+  apis: [path.join(__dirname, '..', 'docs', '**', '*/yaml')],
+};
+
+const specs = swaggerJsDoc(swagggerOptions);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use(
+  '/api',
+  productRouter,
+  cartRouter,
+  viewSessionRouter,
+  sessionRouter,
+  emailRouter,
+  ticketRouter,
+  userRouter
+);
+/*app.use('/api', cartRouter);
 app.use('/api', viewSessionRouter);
 app.use('/api', sessionRouter);
 app.use('/api', emailRouter);
 app.use('/api', ticketRouter);
 app.use('/api', userRouter);
-
+*/
 app.use((error, req, res, next) => {
   if (error instanceof Exception) {
     res

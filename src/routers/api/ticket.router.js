@@ -4,6 +4,7 @@ import { Router } from "express";
 import CartController from "../../controller/carts.controller.js";
 
 import TicketsController from "../../controller/tickets.controller.js"
+import UserController from "../../controller/users.controller.js";
 import ticketsModel from "../../models/tickets.model.js";
 const router = Router();
 
@@ -12,9 +13,8 @@ const router = Router();
 router.post("/carts/:cid/purchase", async (req, res, next) => {
     try {
       const { cid } = req.params;
-      const userCart = await userModel.findOne({ carts: cart });
-  
-      const ticket = await CartController.generateTicket(cid,userCart);
+    
+      const ticket = await CartController.generateTicket(cid);
 
       res.status(200).json({ ticket });
     } catch (error) {
