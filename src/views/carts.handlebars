@@ -1,6 +1,5 @@
-<h1>Carrito de Compras</h1>
-<p>ID del carrito: {{cartId}}</p>
 
+<p>{{cartId}}</p>
 <table id="main" role="grid">
   <tr>
     <th>Título</th>
@@ -10,9 +9,10 @@
     <th>Stock</th>
     <th>Precio</th>
     <th>Cantidad</th>
+    <th>Eliminar cantidad</th>
   </tr>
   {{#each products}}
-  <tr>
+   <tr {{this.product.id}}>
     <td>{{this.product.title}}</td>
     <td>{{this.product.description}}</td>
     <td>{{this.product.code}}</td>
@@ -20,10 +20,16 @@
     <td>{{this.product.stock}}</td>
     <td>{{this.product.price}}</td>
     <td>{{this.quantity}}</td>
+    <td>
+    <input type="number" class="quantity-input" value="1" min="1" max="{{this.quantity}}">
+    <button class="remove-quantity-button" data-cart-id="{{cartId}}" data-product-id="{{this.product.id}}">Eliminar</button>
+  </td>
   </tr>
   {{/each}}
 </table>
 
-<a href="{{cartId}}/purchase" class="btn btn-danger">Terminar Compra</a> 
+<button id="remove-all-button" data-cart-id="{{cartId}}">Eliminar todo el carrito</button>
+<a href="{{cartId}}/purchase" class="btn btn-danger" data-cart-id="{{cartId}}" id="cart-link">Terminar Compra</a> 
 <a href="/api/products" class="btn btn-danger">Volver a Inicio</a> 
 
+<script src="/js/carts.js"></script>

@@ -7,7 +7,6 @@ const router = Router();
 router.get('/users', async (req, res, next) => {
     try {
       const users = await UserController.get();
-      console.log(users,"users rpouter");
       res.status(200).json(users);
     } catch (error) {
       next(error);
@@ -45,6 +44,8 @@ router.get("/users/:uid", async (req, res, next) => {
       next(error)
     }
   });
+
+  
 
 
   router.delete("/users/:uid", UserMiddleware('ADMIN'), async (req, res, next) => {

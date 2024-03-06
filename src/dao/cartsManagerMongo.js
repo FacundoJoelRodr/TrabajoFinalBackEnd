@@ -90,7 +90,7 @@ export default class CartsManager {
       { $set: { products: [] } },
       { new: true }
     );
-
+  
     if (!cart) {
       throw new NotFoundException('Not Found');
     }

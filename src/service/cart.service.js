@@ -1,12 +1,11 @@
-import CartsManagerMongo from "../dao/cartsManagerMongo.js";
-import { NotFoundException } from "../utils.js";
-import ProductSchema from "../models/products.model.js";
-import ticketController from "../controller/tickets.controller.js";
-import userModel from "../models/user.model.js";
-import UserController from "../controller/users.controller.js";
+import CartsManagerMongo from '../dao/cartsManagerMongo.js';
+import { NotFoundException } from '../utils.js';
+import ProductSchema from '../models/products.model.js';
+import ticketController from '../controller/tickets.controller.js';
+import UserController from '../controller/users.controller.js';
 
 export default class cartService {
-  static async get(req, res) {
+  static async get() {
     return await CartsManagerMongo.get();
   }
 
@@ -24,11 +23,11 @@ export default class cartService {
     return cart;
   }
 
-  static async updateById(req, res, cid, pid, quantity) {
+  static async updateById( cid, pid, quantity) {
     return await CartsManagerMongo.updateById(cid, pid, quantity);
   }
 
-  static async deleteById(req, res, cid) {
+  static async deleteById( cid) {
     return await CartsManagerMongo.deleteProductsInCart(cid);
   }
 
@@ -36,7 +35,7 @@ export default class cartService {
     const cart = await CartsManagerMongo.getById(cid);
 
     if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
+      return res.status(404).json({ error: 'Carrito no encontrado' });
     }
     const cartDelete = await CartsManagerMongo.deleteProduct(
       cid,
@@ -48,9 +47,8 @@ export default class cartService {
 
   static async updateProduct(cid, pid, quantity) {
     const cart = await CartsManagerMongo.getById(cid);
-
     if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
+      return res.status(404).json({ error: 'Carrito no encontrado' });
     }
 
     await CartsManagerMongo.updateById(cid, pid, quantity);
@@ -60,15 +58,14 @@ export default class cartService {
 
   static async generateTicket(cid) {
     try {
-      
       const cart = await CartsManagerMongo.getById(cid);
 
       if (!cart) {
-        throw new NotFoundException("Carrito no encontrado");
+        throw new NotFoundException('Carrito no encontrado');
       }
       const userCart = await UserController.getByCart(cart._id);
       const fechaActual = new Date();
-      const fechaFormateada = fechaActual.toLocaleDateString("es-AR");
+      const fechaFormateada = fechaActual.toLocaleDateString('es-AR');
       const totalAmount = this.calculateTotalAmount(cart.products);
 
       const ticketData = {
@@ -103,15 +100,14 @@ export default class cartService {
         }
       }
 
-
       await CartsManagerMongo.deleteById(cid);
 
       await UserController.getByCartAndUpdateCart(newCart._id, userCart._id);
 
       return ticket.id;
     } catch (error) {
-      console.error("Error in generateTicket:", error);
-      throw new Error("Error al generar el ticket");
+      console.error('Error in generateTicket:', error);
+      throw new Error('Error al generar el ticket');
     }
   }
   static calculateTotalAmount(products) {

@@ -27,18 +27,9 @@ export default class ProductManager {
 
   //CREAR PRODUCTO
   static async create(body) {
-    const products = await productSchema.find();
-
     const product = await productSchema.create(body);
-
-    if (products.some((p) => p.code === code)) {
-      throw new BadRequestException(
-        'Este producto ya se encuentra en la base de datos'
-      );
-    } else {
-      console.log('Producto creado correctamente');
       return product;
-    }
+    
   }
 
   ///OBTENER PRODUCTO POR ID

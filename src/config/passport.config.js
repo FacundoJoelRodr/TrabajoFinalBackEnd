@@ -17,7 +17,7 @@ const githubOpts = {
   clientSecret: config.secret_client,
   callbackURL: config.callbackURL,
 };
- function cookieExtractor(req) {
+function cookieExtractor(req) {
   let token = null;
   if (req && req.cookies) {
     token = req.cookies.access_token;
@@ -25,6 +25,9 @@ const githubOpts = {
   return token;
 }
 
+async function updateUserLastLogin(userId) {
+  await UserController.updateUserLastLogin(userId, { lastLogin: new Date() });
+}
 
 export const init = () => {
   passport.serializeUser((user, done) => {
@@ -45,7 +48,7 @@ export const init = () => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: JWT_SECRET, 
+        secretOrKey: JWT_SECRET,
       },
       (payload, done) => {
         return done(null, payload);
@@ -57,16 +60,16 @@ export const init = () => {
     'register',
     new LocalStrategy(opts, async (req, email, password, done) => {
       try {
-        const cartUser = await CartController.create()
+        const cartUser = await CartController.create();
 
-        const passwordHash = createHash(password)
-    
+        const passwordHash = createHash(password);
+
         const newContent = {
           ...req.body,
           password: passwordHash,
-          carts: cartUser.id
-        }
-     
+          carts: cartUser.id,
+        };
+
         const newUser = await UserController.createUser(newContent);
 
         done(null, newUser);
@@ -89,6 +92,8 @@ export const init = () => {
         if (!isPassValid) {
           return done(new Error('Email y contraseña invalidos!'));
         }
+        console.log(user._id, "user id login");
+        await updateUserLastLogin(user._id);
         done(null, user);
       } catch (error) {
         return done(new Error('Error al Iniciar Sesion'), error.message);
@@ -116,7 +121,7 @@ export const init = () => {
           role: 'USER',
           provider: 'Github',
         };
-        const newUser = await CartController.createUser(user);
+        const newUser = await UserController.createUser(user);
         done(null, newUser);
       }
     )

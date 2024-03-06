@@ -9,7 +9,6 @@ router.get('/sendEmail', async (req, res, next) => {
       email: 'natalia.stampella@gmail.com',
       first_name: 'Natalia!'
     });
-    console.log(result, "hola");
     res.status(200).json({ message: 'Correo enviado correctamente' });
   } catch (error) {
     next(error);

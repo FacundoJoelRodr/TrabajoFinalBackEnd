@@ -5,7 +5,6 @@ import { UserMiddleware } from '../../utils.js';
 
 const router = Router();
 
-
 //// MONGO
 
 router.post('/carts', async (req, res, next) => {
@@ -18,31 +17,40 @@ router.post('/carts', async (req, res, next) => {
   }
 });
 
-router.get('/carts', UserMiddleware('USER'), async (req, res, next) => {
-  try {
-    await CartController.get();
-    res.status(200).json();
-  } catch (error) {
-    next(error);
+router.get(
+  '/carts',
+ // UserMiddleware('USER', 'PREMIUM', 'ADMIN'),
+  async (req, res, next) => {
+    try {
+      await CartController.get();
+      res.status(200).json();
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-router.get('/carts/:cid', UserMiddleware('USER'), async (req, res, next) => {
-  try {
-    const {
-      params: { cid },
-    } = req;
+router.get(
+  '/carts/:cid',
+  //UserMiddleware('USER', 'PREMIUM', 'ADMIN'),
+  async (req, res, next) => {
+    try {
+      const {
+        params: { cid },
+      } = req;
 
-    const cart = await CartController.getById(cid);
-    res.render('carts', { products: cart.products, cartId: cart.cartId });
-  } catch (error) {
-    next(error);
+      const cart = await CartController.getById(cid);
+      res.render('carts', { products: cart.products, cartId: cart.cartId });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 /////////////////////
 router.put(
   '/carts/:cid/product/:pid',
+ // UserMiddleware('USER', 'PREMIUM'),
   async (req, res, next) => {
     const {
       params: { cid, pid },
@@ -55,36 +63,42 @@ router.put(
         .status(400)
         .json({ error: 'La cantidad no se proporcionó correctamente' });
     }
-  
+
     try {
       const cart = await CartController.updateProduct(cid, pid, quantity);
       res.status(201).json(cart);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 );
 ///////////////////////////////
-router.put('/carts/:cid', UserMiddleware('USER'), async (req, res, next) => {
-  try {
-    const {
-      params: { cid },
-      body,
-    } = req;
-    await CartController.updateById(cid, body);
-    res.status(204).end();
-  } catch (error) {
-    next(error);
+router.put(
+  '/carts/:cid',
+  //UserMiddleware('USER', 'PREMIUM'),
+  async (req, res, next) => {
+    try {
+      const {
+        params: { cid },
+        body,
+      } = req;
+      await CartController.updateById(cid, body);
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.delete(
-  '/carts/:cid', UserMiddleware('USER'),
+  '/carts/:cid',
+  //UserMiddleware('USER', 'PREMIUM'),
   async (req, res, next) => {
     try {
       const {
         params: { cid },
       } = req;
+      
       await CartController.deleteById(cid);
       res.status(204).end();
     } catch (error) {
@@ -94,7 +108,8 @@ router.delete(
 );
 
 router.delete(
-  '/carts/:cid/product/:pid', UserMiddleware('USER'),
+  '/carts/:cid/product/:pid',
+  //UserMiddleware('USER', 'PREMIUM'),
   async (req, res, next) => {
     const {
       params: { cid, pid },
@@ -120,7 +135,5 @@ router.delete(
     }
   }
 );
-
-
 
 export default router;

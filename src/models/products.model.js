@@ -1,19 +1,20 @@
+
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
-const productsOwner = new mongoose.Schema({
-  email: { type: String, ref: 'User' },
+/*const productsOwnerSchema = new mongoose.Schema({
+  idOwner: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
 });
-
+*/
 const productSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     price: { type: Number, required: true },
-    code: { type: String, required: true, unique: true },
+    code: { type: mongoose.Schema.Types.ObjectId, auto: true },
     stock: { type: Number, required: true },
     description: { type: String, required: true },
     category: { type: String, required: true },
-    owner: { type: [productsOwner], default: 'ADMIN' },
+    owner: { type: String, required: true}, 
   },
   { timestamps: true }
 );

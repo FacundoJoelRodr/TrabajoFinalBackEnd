@@ -10,6 +10,10 @@ import UserController from '../../controller/users.controller.js';
 
 const router = Router();
 
+async function updateUserLastLogin(userId) {
+  await UserController.updateUserLastLogin(userId, { lastLogin: new Date() });
+}
+
 
 router.post('/login', async (req, res) => {
   const {
@@ -17,7 +21,7 @@ router.post('/login', async (req, res) => {
   } = req;
  
   const user = await UserController.getByEmail(email);
-
+  await UserController.updateUserLastLogin(user._id, { lastLogin: new Date() });
   if (!user) {
     return res.status(401).json({ message: 'correo o contraseña invalidos' });
   }
@@ -55,6 +59,19 @@ router.post(
    res.redirect('/api/login');
   }
 );
+
+router.delete(
+  '/',
+   async (req, res, next) => {
+    try {
+      await UserController.deleteInactiveUsers();
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 
 /*router.post(
   '/login',

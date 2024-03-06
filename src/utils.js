@@ -27,10 +27,19 @@ export const tokenGenerator = (user) => {
     last_name,
     email,
     role,
-    carts
+    carts,
   };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '60m' });
 };
+
+/*export const isAuthenticated = (req, res, next) => {
+  // Si el usuario está autenticado, pasa al siguiente middleware
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  // Si el usuario no está autenticado, redirige a la página de inicio de sesión
+  res.redirect('/login');
+};*/
 
 export const jwtAuth = (req, res, next) => {
   const { authorization: token } = req.headers;
@@ -46,18 +55,15 @@ export const jwtAuth = (req, res, next) => {
   });
 };
 
-
-
 export const verificarToken = (token, secreto) => {
   try {
-      const decoded = jwt.verify(token, secreto);
-      return decoded;
+    const decoded = jwt.verify(token, secreto);
+    return decoded;
   } catch (err) {
-      console.error('Error al decodificar el token:', err);
-      throw err;
+    console.error('Error al decodificar el token:', err);
+    throw err;
   }
 };
-
 
 export const AuthMiddleware = (strategy) => (req, res, next) => {
   passport.authenticate(strategy, function (error, user, info) {
@@ -74,15 +80,17 @@ export const AuthMiddleware = (strategy) => (req, res, next) => {
   })(req, res, next);
 };
 
-export  const UserMiddleware = (allowedRoles) => {
-  return (payload,req,res,next) => {
-    const user = payload.user.role; 
+export const UserMiddleware = (allowedRoles) => {
+  return (payload, req, res, next) => {
+    const user = payload.user.role;
     if (!user || !user.role) {
       return res.status(401).json({ message: 'Acceso no autorizado' });
     }
 
     if (!allowedRoles.includes(user.role)) {
-      return res.status(403).json({ message: 'No tienes permiso para realizar esta acción' });
+      return res
+        .status(403)
+        .json({ message: 'No tienes permiso para realizar esta acción' });
     }
     next();
   };
@@ -143,16 +151,13 @@ export default (error, req, res, next) => {
 };
 
 export const generateProduct = () => {
-
   return {
     id: faker.database.mongodbObjectId(),
     title: faker.commerce.productName(),
     price: faker.commerce.price(),
-    stock: faker.number.int({mix:10000, max:99999}),
+    stock: faker.number.int({ mix: 10000, max: 99999 }),
     description: faker.commerce.productDescription(),
     code: faker.database.mongodbObjectId(),
     category: faker.commerce.productDescription(),
   };
 };
-
-
