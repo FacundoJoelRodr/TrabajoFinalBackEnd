@@ -61,4 +61,14 @@ export default class userManager {
     const result = userModel.deleteOne({ _id: uid });
     return result;
   }
+
+  static async updateRole(uid, newRole) {
+    const user = await userModel.findOneAndUpdate(
+      { _id: uid },
+      { $set: { role: newRole } },
+      { new: true }
+    );
+    console.log(user, "user role dao");
+    return user;
+  }
 }

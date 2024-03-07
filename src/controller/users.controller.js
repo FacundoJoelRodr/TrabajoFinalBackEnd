@@ -149,6 +149,7 @@ export default class UserController {
         .send('La nueva contraseña no puede ser igual a la anterior');
     }
 
+
     // Actualiza la contraseña
     await userModel.updateOne(
       { email },
@@ -157,6 +158,11 @@ export default class UserController {
 
     res.send('Contraseña actualizada con éxito');
   }
+
+  static async updateRole(uid, newRole) {
+    await userService.updateRole(uid, newRole);
+  }
+
 
   async destroySession() {
     req.session.destroy((err) => {

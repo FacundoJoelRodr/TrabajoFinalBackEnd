@@ -63,6 +63,10 @@ export default class userService {
     await userManager.updateById(criterio, operation);
   }
 
+  static async updateRole(uid, newRole) {
+    await userManager.updateRole(uid, newRole);
+  }
+
   static async deleteById(uid) {
     const user = await userManager.getById(uid);
     if (!user) throw new Exception('El usuario no existe', 404);

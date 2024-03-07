@@ -1,0 +1,36 @@
+<table id="main" role="grid">
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Rol</th>
+    <th>Modificar </th>
+    <th>Email</th>
+    <th>Edad</th>
+    <th>Acciones</th>
+  </tr>
+
+  {{#each users}}
+  <tr data-user-id="{{this.id}}">
+    <td>{{this.id}}</td>
+    <td>{{this.first_name}}</td>
+    <td>{{this.last_name}}</td>
+    <td>{{this.role}}</td>
+    <td>
+<select class="user-role" data-user-id="{{this.id}}">
+  <option value="ADMIN" {{this.selectedAdmin}}>ADMIN</option>
+  <option value="PREMIUM" {{this.selectedPremium}}>PREMIUM</option>
+  <option value="USER" {{this.selectedUser}}>USER</option>
+</select>
+    </td>
+    <td>{{this.email}}</td>
+    <td>{{this.age}}</td>
+    <td>
+      <button class="remove-user" data-user-id="{{this.id}}">Eliminar</button>
+      <button class="update-user" data-user-id="{{this.id}}">Actualizar</button>
+    </td>
+  </tr>
+  {{/each }}
+</table>
+
+<script src="/js/user.js"></script>

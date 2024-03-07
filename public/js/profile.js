@@ -20,34 +20,53 @@
     datosU = data; // Guardar los datos del usuario para su posterior uso
   }
 
-  function obtenerDatosPerfil(cartId) {
-    fetch('/api/current')
-      .then((response) => response.json())
-      .then((data) => {
-        actualizarPerfil(data, cartId);
-        const cartLink = document.getElementById('cart-link');
-        if (cartLink) {
-          cartLink.href = `/api/carts/${cartId}`;
+function obtenerDatosPerfil(cartId) {
+  fetch('/api/current')
+    .then((response) => response.json())
+    .then((data) => {
+      actualizarPerfil(data, cartId);
+      const cartLink = document.getElementById('cart-link');
+      if (cartLink) {
+        cartLink.href = `/api/carts/${cartId}`;
+      }
+      console.log(datosU.id, 'datosU');
+      if (data.role === 'ADMIN') {
+        const userLink = document.getElementById('user-link');
+        if (userLink) {
+          userLink.style.display = 'inline'; // Mostrar el enlace
         }
-        console.log(datosU.id, "datosU");
-        if (datosU.role === 'PREMIUM' || datosU.role === 'ADMIN') {
-          const addProductLink = document.getElementById('product-link');
-          if (addProductLink) {
-            addProductLink.addEventListener('click', function (event) {
-              const newProductForm =
-                document.getElementById('new-product-form');
-              if (newProductForm) {
-                newProductForm.style.display = 'block';
-              }
-              event.preventDefault();
-            });
-          }
+      } else {
+        // Ocultar el enlace si el usuario no es ADMIN
+        const userLink = document.getElementById('user-link');
+        if (userLink) {
+          userLink.style.display = 'none';
         }
-      })
-      .catch((error) => {
-        console.log('error', error);
-      });
-  }
+      }
+      
+      if (datosU.role === 'PREMIUM' || datosU.role === 'ADMIN') {
+        const addProductLink = document.getElementById('product-link');
+        if (addProductLink) {
+          addProductLink.style.display = 'inline'; // Mostrar el enlace
+          addProductLink.addEventListener('click', function (event) {
+            const newProductForm = document.getElementById('new-product-form');
+            if (newProductForm) {
+              newProductForm.style.display = 'block';
+            }
+            event.preventDefault();
+          });
+        }
+      } else {
+        // Si el usuario no es PREMIUM o ADMIN, ocultar el enlace
+        const addProductLink = document.getElementById('product-link');
+        if (addProductLink) {
+          addProductLink.style.display = 'none';
+        }
+      }
+    })
+    .catch((error) => {
+      console.log('error', error);
+    });
+}
 
   function addToCart(productId, cartId) {
     const quantityInput = document.getElementById('quantity-' + productId);
