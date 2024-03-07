@@ -3,8 +3,8 @@ import { Exception, NotFoundException, BadRequestException } from '../utils.js';
 
 export default class ProductManager {
   static async validateRequiredFields(data) {
-    const { title, code, price, stock, description, category } = data;
-    if (!title || !code || !price || !stock || !description || !category) {
+    const { title, code, price, stock, description, category, owner } = data;
+    if (!title || !code || !price || !stock || !description || !category || !owner) {
       throw new BadRequestException('Faltan campos obligatorios');
     }
   }
@@ -33,11 +33,8 @@ export default class ProductManager {
   }
 
   ///OBTENER PRODUCTO POR ID
-  static async getById(pid) {
-    const product = await productSchema.findById(pid);
-    if (!product) {
-      throw new NotFoundException('Not Found');
-    }
+  static async  getById(pid) {
+    const product =  await productSchema.findById(pid);
     return product;
   }
 
@@ -56,12 +53,12 @@ export default class ProductManager {
   ///BORRRA EL PRODUCTO POR ID
 
   static async deleteById(pid) {
+   
     const product = await productSchema.findById(pid);
     if (!product) {
       throw new NotFoundException('Not Found');
     }
     const criteria = { _id: pid };
-
     await productSchema.deleteOne(criteria);
 
     console.log('Producto se ha eliminado correctamente');

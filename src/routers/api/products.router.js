@@ -78,7 +78,7 @@ router.delete(
       const {
         params: { pid },
       } = req;
-      await ProductController.deleteById(pid);
+      await ProductController.deleteById(pid,req);
       res.status(204).end();
     } catch (error) {
       next(error);
