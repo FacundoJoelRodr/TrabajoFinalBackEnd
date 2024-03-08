@@ -67,22 +67,34 @@ export default class CartsManager {
   }
 
   static async deleteProduct(cid, pid, quantity) {
-    const cart = await CartSchema.findById(cid);
+    try {
+        const cart = await CartSchema.findById(cid);
+     
+        if (!cart) {
+            throw new NotFoundException('Carrito no encontrado');
+        }
 
-    if (!cart) {
-      throw new NotFoundException('Not Found');
+        const productIndex = cart.products.findIndex(p => String(p.product) === pid);
+        
+        if (productIndex === -1) {
+            throw new NotFoundException('Producto no encontrado en el carrito');
+        }
+
+        if (cart.products[productIndex].quantity <= quantity) {
+            // Si la cantidad a eliminar es mayor o igual a la cantidad del producto en el carrito, eliminar el producto completamente
+            cart.products.splice(productIndex, 1);
+        } else {
+            // Si la cantidad a eliminar es menor que la cantidad del producto en el carrito, reducir la cantidad del producto
+            cart.products[productIndex].quantity -= quantity;
+        }
+
+        // Guardar los cambios en el carrito
+        return await cart.save();
+    } catch (error) {
+        console.error('Error al borrar producto del carrito:', error);
+        throw new Error('Error al eliminar el producto del carrito');
     }
-
-    const product = cart.products.find((p) => String(p._id) === pid);
-
-    if (!product) {
-      cart.products.push({ _id: pid, quantity });
-    } else {
-      product.quantity -= quantity;
-    }
-
-    return await cart.save();
-  }
+}
 
   static async deleteProductsInCart(cid) {
     const cart = await CartSchema.findOneAndUpdate(

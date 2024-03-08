@@ -1,7 +1,7 @@
-
 <p>{{cartId}}</p>
 <table id="main" role="grid">
   <tr>
+    <th>ID</th>
     <th>Título</th>
     <th>Descripción</th>
     <th>Código</th>
@@ -12,7 +12,8 @@
     <th>Eliminar cantidad</th>
   </tr>
   {{#each products}}
-   <tr {{this.product.id}}>
+  <tr>
+    <td>{{this.product._id}}</td>
     <td>{{this.product.title}}</td>
     <td>{{this.product.description}}</td>
     <td>{{this.product.code}}</td>
@@ -21,9 +22,9 @@
     <td>{{this.product.price}}</td>
     <td>{{this.quantity}}</td>
     <td>
-    <input type="number" class="quantity-input" value="1" min="1" max="{{this.quantity}}">
-    <button class="remove-quantity-button" data-cart-id="{{cartId}}" data-product-id="{{this.product.id}}">Eliminar</button>
-  </td>
+      <input type="number" class="quantity-input" value="1" min="1" max="{{this.quantity}}">
+      <button class="remove-quantity-button" data-product-id="{{this.product._id}}" id="product-link">Eliminar</button>
+    </td>
   </tr>
   {{/each}}
 </table>

@@ -127,7 +127,7 @@ router.delete(
         return res.status(400).json({ error: 'IDs inválidos' });
       }
 
-      const cart = await CartController.deleteProduct(cid, pid);
+      const cart = await CartController.deleteProduct(cid, pid, quantity);
 
       res.status(201).json(cart);
     } catch (error) {

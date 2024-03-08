@@ -13,9 +13,11 @@
 
       if (!response.ok) {
         const errorData = await response.json();
+        
         throw new Error(errorData.error);
       }
 
+      location.reload()
       // Actualizar la interfaz de usuario según sea necesario
     } catch (error) {
       console.error('Error al eliminar producto del carrito:', error.message);

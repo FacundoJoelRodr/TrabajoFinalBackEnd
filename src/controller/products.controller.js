@@ -68,7 +68,6 @@ export default class ProductController {
 
   static async getById(pid) {
     try {
-      console.log(pid, "get pid controller");
       const product = await productService.getById(pid);
       if (!product) {
         throw new Error("Producto no encontrado");

@@ -63,11 +63,11 @@ export default class CartController {
 
   static async updateProduct(cid, pid, quantity) {
     try {
-     // const product = await ProductController.getById(pid);
-     // const user = await UserController.getByCart(cid);
-      /*if (product.owner === user._id) {
+      const product = await ProductController.getById(pid);
+      const user = await UserController.getByCart(cid);
+      if (product.owner === user._id) {
         throw new Error('no puedes comprar tu mismo producto');
-      }*/
+      }
       const cart = await CartService.getById(cid);
       await CartService.updateProduct(cid, pid, quantity);
       return cart;
