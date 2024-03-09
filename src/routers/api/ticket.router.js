@@ -1,11 +1,7 @@
 
 import { Router } from "express";
-
-import CartController from "../../controller/carts.controller.js";
-
 import TicketsController from "../../controller/tickets.controller.js"
-import UserController from "../../controller/users.controller.js";
-import ticketsModel from "../../models/tickets.model.js";
+
 const router = Router();
 
 //// MONGO
@@ -14,7 +10,7 @@ router.post("/carts/:cid/purchase", async (req, res, next) => {
     try {
       const { cid } = req.params;
     
-      const ticket = await CartController.generateTicket(cid);
+      const ticket = await TicketsController.generateTicket(cid);
 
       res.status(200).json({ ticket });
     } catch (error) {
@@ -25,9 +21,9 @@ router.post("/carts/:cid/purchase", async (req, res, next) => {
   router.get('/carts/:cid/purchase', async (req, res, next) => {
     try {
       const { params: { cid } } = req;
-      const cart = await CartController.generateTicket(cid);
+      const cart = await TicketsController.generateTicket(cid);
 
-      const ticket = await TicketsController.getById(cart);
+      const ticket = await TicketsController.getById(cart._id);
      
       res.render('tickets', { 
         code: ticket.code || 'No disponible',

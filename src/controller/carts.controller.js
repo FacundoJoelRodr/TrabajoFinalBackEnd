@@ -76,15 +76,6 @@ export default class CartController {
       throw new Error('Error al actualizar el producto del carrito');
     }
   }
-  static async generateTicket(cid) {
-    try {
-      return await CartService.generateTicket(cid);
-    } catch (error) {
-      console.error('Error al generar tickets:', error);
-      throw new Error('Error al generar el ticket del carrito');
-    }
-  }
-
   static async findOne() {
     try {
       const cart = await CartService.findOne();

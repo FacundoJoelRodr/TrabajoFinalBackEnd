@@ -1,19 +1,17 @@
 <h1>Ticket de Compra</h1>
 
-<table id="main" role="grid">
-  <tr>
-    <th>Código</th>
-    <th>Fecha de Ticket</th>
-    <th>Comprador</th>
-    <th>Monto Total</th>
-  </tr>
+<div>
+ <h4>Código del Ticket es: {{code}}</h4><h5>Fecha: {{purchase_datetime}}</h5>
+ <p>Mail de comprado: {{purchaser}}</p>
+ 
+  {{#each ticket.carts}}
+
+    <p>{{this.product}}</p>
+    <p>{{this.quantity}}</p>
   
-  <tr>
-    <td>{{code}}</td>
-    <td>{{purchase_datetime}}</td>
-    <td>{{purchaser}}</td>
-    <td>{{amount}}</td>
-  </tr>
-</table>
+  {{/each}}
+ <p>Total: $ {{amount}}</p>
+</div>
+
 
 <a href="/api/products" class="btn btn-danger">Volver a Inicio</a> 

@@ -21,7 +21,15 @@ export default class TicketsController {
     return await ticketService.deleteById(tid);
   }
 
-  
+  static async generateTicket(cid) {
+    try {
+      return await ticketService.generateTicket(cid);
+    } catch (error) {
+      console.error('Error al generar tickets:', error);
+      throw new Error('Error al generar el ticket del carrito');
+    }
+  }
+
 
 
 }
