@@ -28,16 +28,6 @@ const router = Router();
     }
   });
 
-  router.get('/users/mails', async (req, res, next) => {
-    try {
-      const email = "adminCoder@coder.com"
-      const users = await UserController.findUserByEmail(email);
-      res.status(200).json(users);
-    } catch (error) {
-      next(error);
-    }
-  });
-
   
   router.post('/users', async (req, res, next) => {
     try {
@@ -63,7 +53,7 @@ router.get("/users/:uid", async (req, res, next) => {
   
 
 
-  router.delete("/users/:uid", UserMiddleware('ADMIN'), async (req, res, next) => {
+  router.delete("/users/:uid", UserMiddleware(['ADMIN']), async (req, res, next) => {
     try {
       const {
         params: { uid },

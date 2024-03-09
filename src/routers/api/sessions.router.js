@@ -10,10 +10,6 @@ import UserController from '../../controller/users.controller.js';
 
 const router = Router();
 
-async function updateUserLastLogin(userId) {
-  await UserController.updateUserLastLogin(userId, { lastLogin: new Date() });
-}
-
 
 router.post('/login', async (req, res) => {
   const {
@@ -21,13 +17,15 @@ router.post('/login', async (req, res) => {
   } = req;
  
   const user = await UserController.getByEmail(email);
-  await UserController.updateUserLastLogin(user._id, { lastLogin: new Date() });
   if (!user) {
-    return res.status(401).json({ message: 'correo o contraseña invalidos' });
+    return res.status(401).send('<script>alert("Correo o contraseña inválidos"); window.location="/api/login";</script>');
   }
+
+  await UserController.updateUserLastLogin(user._id, { lastLogin: new Date() });
+  
   const isPassValid = isValidPassword(password, user);
   if (!isPassValid) {
-    return res.status(401).json({ message: 'correo o contraseña invalidos' });
+    return res.status(401).send('<script>alert("Correo o contraseña inválidos"); window.location="/api/login";</script>');
   }
   const token = tokenGenerator(user);
   res.cookie('access_token', token, { maxAge: 60000, httpOnly: true });
@@ -38,7 +36,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/current', AuthMiddleware('jwt'), (req, res) => {
   const user = req.user;
-  res.status(200).json(req.user);
+  res.status(200).json(user);
 });
 
 router.get('/loggerTest', (req, res) => {

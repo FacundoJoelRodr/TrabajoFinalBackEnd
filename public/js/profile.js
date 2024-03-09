@@ -29,7 +29,6 @@ function obtenerDatosPerfil(cartId) {
       if (cartLink) {
         cartLink.href = `/api/carts/${cartId}`;
       }
-      console.log(datosU.id, 'datosU');
       if (data.role === 'ADMIN') {
         const userLink = document.getElementById('user-link');
         if (userLink) {
@@ -87,9 +86,8 @@ function obtenerDatosPerfil(cartId) {
       .then((response) => {
         if (response.ok) {
           alert('Producto agregado al carrito');
-          window.location.href = `/api/carts/${cartId}`;
         } else {
-          alert('Error al agregar el producto al carrito');
+          alert('Error al agregar el producto al carrito o no tienes los permisos para realizar la compra');
         }
       })
       .catch((error) => {

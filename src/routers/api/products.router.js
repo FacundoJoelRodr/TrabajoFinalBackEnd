@@ -3,12 +3,12 @@ import ProductController from '../../controller/products.controller.js';
 import {
   UserMiddleware,
   generateProduct,
-  
+  jwtAuth
 } from '../../utils.js';
 
 const router = Router();
 
-router.get('/products',  async (req, res, next) => {
+router.get('/products',UserMiddleware(['USER', 'PREMIUM', 'ADMIN']),  async (req, res, next) => {
   try {
     const products = await ProductController.get(req, res);
     res.render('products', products);
@@ -17,7 +17,8 @@ router.get('/products',  async (req, res, next) => {
   }
 });
 
-router.get('/products/:pid',  async (req, res, next) => {
+router.get('/products/:pid', UserMiddleware('USER', 'PREMIUM', 'ADMIN'),  async (req, res, next) => {
+  
   try {
     const {
       params: { pid },
@@ -39,6 +40,7 @@ router.post('/mockingproducts', async (req, res, next) => {
 
 router.post(
   '/products',
+  UserMiddleware(['PREMIUM', 'ADMIN']),
   async (req, res, next) => {
     try {
       const { body } = req;
@@ -56,7 +58,7 @@ router.get('/products/add', (req, res) => {
 
 router.put(
   '/products/:pid',
-  UserMiddleware('ADMIN', 'PREMIUM'),
+  UserMiddleware(['PREMIUM', 'ADMIN']),
   async (req, res, next) => {
     try {
       const {
@@ -73,6 +75,7 @@ router.put(
 
 router.delete(
   '/products/:pid',
+  UserMiddleware(['PREMIUM', 'ADMIN']),
    async (req, res, next) => {
     try {
       const {

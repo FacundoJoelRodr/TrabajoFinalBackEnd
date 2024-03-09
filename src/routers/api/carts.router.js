@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import CartController from '../../controller/carts.controller.js';
 import mongoose from 'mongoose';
-import { UserMiddleware } from '../../utils.js';
+import { UserMiddleware, jwtAuth} from '../../utils.js';
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.post('/carts', async (req, res, next) => {
 
 router.get(
   '/carts',
- // UserMiddleware('USER', 'PREMIUM', 'ADMIN'),
+  UserMiddleware(['USER', 'PREMIUM', 'ADMIN']),
   async (req, res, next) => {
     try {
       await CartController.get();
@@ -32,7 +32,7 @@ router.get(
 
 router.get(
   '/carts/:cid',
-  //UserMiddleware('USER', 'PREMIUM', 'ADMIN'),
+  UserMiddleware(['USER', 'PREMIUM', 'ADMIN']),
   async (req, res, next) => {
     try {
       const {
@@ -50,7 +50,7 @@ router.get(
 /////////////////////
 router.put(
   '/carts/:cid/product/:pid',
- // UserMiddleware('USER', 'PREMIUM'),
+  UserMiddleware(['USER', 'PREMIUM']),
   async (req, res, next) => {
     const {
       params: { cid, pid },
@@ -75,7 +75,7 @@ router.put(
 ///////////////////////////////
 router.put(
   '/carts/:cid',
-  //UserMiddleware('USER', 'PREMIUM'),
+  UserMiddleware(['USER', 'PREMIUM']),
   async (req, res, next) => {
     try {
       const {
@@ -92,7 +92,7 @@ router.put(
 
 router.delete(
   '/carts/:cid',
-  //UserMiddleware('USER', 'PREMIUM'),
+  UserMiddleware(['USER', 'PREMIUM']),
   async (req, res, next) => {
     try {
       const {
@@ -109,7 +109,7 @@ router.delete(
 
 router.delete(
   '/carts/:cid/product/:pid',
-  //UserMiddleware('USER', 'PREMIUM'),
+  UserMiddleware(['USER', 'PREMIUM']),
   async (req, res, next) => {
     const {
       params: { cid, pid },

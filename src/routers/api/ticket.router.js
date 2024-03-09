@@ -1,12 +1,13 @@
 
 import { Router } from "express";
 import TicketsController from "../../controller/tickets.controller.js"
+import { UserMiddleware } from "../../utils.js";
 
 const router = Router();
 
 //// MONGO
 
-router.post("/carts/:cid/purchase", async (req, res, next) => {
+router.post("/carts/:cid/purchase",UserMiddleware(['USER', 'PREMIUM']), async (req, res, next) => {
     try {
       const { cid } = req.params;
     
@@ -18,7 +19,7 @@ router.post("/carts/:cid/purchase", async (req, res, next) => {
     }
   });
   
-  router.get('/carts/:cid/purchase', async (req, res, next) => {
+  router.get('/carts/:cid/purchase', UserMiddleware(['USER', 'PREMIUM']), async (req, res, next) => {
     try {
       const { params: { cid } } = req;
       const cart = await TicketsController.generateTicket(cid);

@@ -68,15 +68,11 @@ export default class UserController {
   }
 
   static async getByEmail(email) {
-    try {
+
       const user = await userService.getByEmail(email);
-      if (!user) {
-        throw new Exception('No existe el usuario', 404);
-      }
+  
       return user;
-    } catch (error) {
-      throw new Exception(error.message, error.status);
-    }
+   
   }
 
   static async getByCart(cart) {
