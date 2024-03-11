@@ -3,6 +3,7 @@ dotenv.config();
 
 export default {
   port: process.env.PORT,
+  link: process.env.LINK,
   secret_idClient: process.env.SECRET_IDCLIENT, // Aquí debe corresponder a la variable definida en el archivo .env
   secret_client: process.env.SECRET_CLIENT,
   mongoDB_URL: process.env.MONGODB_URL,

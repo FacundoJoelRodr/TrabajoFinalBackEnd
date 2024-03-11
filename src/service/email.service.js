@@ -47,7 +47,7 @@ class EmailService {
 
 
   async sendRecoveryPassword(user,token) {
-    const resetUrl = `http://localhost:8080/api/recovery-password?token=${token}`;
+    const resetUrl = `${config.link}api/recovery-password?token=${token}`;
     return this.sendEmail(
       user.email,
       `Solicitud de cambio de contraseña`,
