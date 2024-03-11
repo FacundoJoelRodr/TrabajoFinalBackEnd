@@ -40,8 +40,12 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
-  res.redirect('/api/login');
+app.get('*', (req, res, next) => {
+  if (req.url !== '/api/login') {
+    res.redirect('/api/login');
+  } else {
+    next(); // Continúa con el siguiente middleware si ya estás en '/api/login'
+  }
 });
 
 const createAdminUser = async () => {
