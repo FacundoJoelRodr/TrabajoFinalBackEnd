@@ -5,9 +5,10 @@ import {
   isValidPassword,
   tokenGenerator,
   AuthMiddleware,
+  tokenGeneratorMail
 } from '../../utils.js';
 import UserController from '../../controller/users.controller.js';
-
+import emailService from '../../service/email.service.js';
 const router = Router();
 
 
@@ -28,6 +29,7 @@ router.post('/login', async (req, res) => {
     return res.status(401).send('<script>alert("Correo o contraseña inválidos"); window.location="/api/login";</script>');
   }
   const token = tokenGenerator(user);
+  console.log(token, "token login");
   res.cookie('access_token', token, { maxAge: 60000, httpOnly: true });
 
   req.session.user = token;
@@ -93,19 +95,38 @@ router.get(
     res.redirect('/api/products');
   }
 );
-
 router.post('/recovery-password', async (req, res, next) => {
+  console.log(req.query.token,"recovery");
+  const token = req.query.token;
   try {
-    await UserController.recoveryPassword(req);
+    if (!token) {
+      //res.redirect('/api/send-recovery-password');    
+      console.log("no hay token");
+    }
+
+    await UserController.recoveryPassword(req, res); // Pasamos res para manejar la respuesta
     res.redirect('/api/login');
   } catch (error) {
     next(error);
   }
 });
 
+
 router.get('/logout', async (req, res) => {
   try {
     await UserController.destroySession();
+    res.redirect('/api/login');
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/send-recovery-password', async (req, res, next) => {
+  try {
+   const user = await UserController.getByEmail(req.body.email);
+   const token = tokenGenerator(user)
+    res.cookie('access_token', token, { maxAge: 60000, httpOnly: true });
+    await emailService.sendRecoveryPassword(user,token);
     res.redirect('/api/login');
   } catch (error) {
     next(error);

@@ -65,8 +65,10 @@ export default class CartController {
     try {
       const product = await ProductController.getById(pid);
       const user = await UserController.getByCart(cid);
-      if (product.owner === user._id) {
-        throw new Error('no puedes comprar tu mismo producto');
+      console.log(product,"product");
+      console.log(user,"product");
+      if (product.owner === user.email) {
+        throw new Error('no puedes comprar tu mismo producto');    
       }
       const cart = await CartService.getById(cid);
       await CartService.updateProduct(cid, pid, quantity);

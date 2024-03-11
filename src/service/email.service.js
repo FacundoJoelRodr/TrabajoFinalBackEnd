@@ -44,6 +44,16 @@ class EmailService {
       `<h4>Hola ${user.first_name}! lamentablemente te avisamos que tu usuario ha sido elimando ya que han pasado mas 48hs sin conexion! .`
     );
   }
+
+
+  async sendRecoveryPassword(user,token) {
+    const resetUrl = `http://localhost:8080/api/recovery-password?token=${token}`;
+    return this.sendEmail(
+      user.email,
+      `Solicitud de cambio de contraseña`,
+      `<p>Hola ${user.first_name}! le enviamos el link para el cambio de contraseña: <a href="${resetUrl}">${resetUrl}</a><b>IMPORTANTE EL LINK TENDRA UNA VIDA UTIL DE UNA HORA</b></p>`
+    );
+  }
 }
 
 export default new EmailService();

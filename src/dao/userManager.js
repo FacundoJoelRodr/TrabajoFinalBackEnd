@@ -54,7 +54,9 @@ export default class userManager {
   }
 
   static updateById(uid, data) {
-    userModel.updateOne({ _id: uid }, data);
+    const criterio = { _id: uid };
+    const operation = { $set: { password: data } };
+    userModel.updateOne(criterio, operation);
   }
 
   static deleteOne(uid) {
@@ -68,7 +70,6 @@ export default class userManager {
       { $set: { role: newRole } },
       { new: true }
     );
-    console.log(user, "user role dao");
     return user;
   }
 }

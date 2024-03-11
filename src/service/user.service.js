@@ -56,7 +56,7 @@ export default class userService {
     await userManager.updateById(criterio, operation);
   }
 
-  static async updatePassword(uid, data) {
+  static async recoveryPassword(uid, data) {
     // const user = await userManager.getById(uid);
     const criterio = { _id: uid };
     const operation = { $set: { password: data } };

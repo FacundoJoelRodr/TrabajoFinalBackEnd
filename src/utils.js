@@ -11,6 +11,11 @@ const __filename = fileURLToPath(import.meta.url);
 
 export const __dirname = path.dirname(__filename);
 
+export const tokenGeneratorMail =(user) => {
+  const { email } = user;
+return jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+};
+
 export const createHash = (password) =>
   bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
@@ -94,6 +99,8 @@ export const  UserMiddleware = (allowedRoles) => {
     next();
   };
 };
+
+
 
 
 

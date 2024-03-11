@@ -1,6 +1,6 @@
 import userService from '../service/user.service.js';
 import emailService from '../service/email.service.js';
-import { Exception } from '../utils.js';
+import { Exception,createHash  } from '../utils.js';
 import UserDto from '../dto/user.dto.js';
 
 export default class UserController {
@@ -107,14 +107,14 @@ export default class UserController {
     }
   }
 
-  static async updatePassword(uid, data) {
+  /*static async recoveryPassword(uid, data) {
     try {
-      await userService.updatePassword(uid, data);
+      await userService.recoveryPassword(uid, data);
       console.log('Usuario actualizado');
     } catch (error) {
       throw new Exception(error.message, error.status);
     }
-  }
+  }*/
 
   static async deleteById(uid) {
     try {
@@ -125,36 +125,37 @@ export default class UserController {
     }
   }
 
-  async recoveryPassword(req, res) {
-    const {
-      body: { email, oldPassword, newPassword },
-    } = req;
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(401).send('Email o contraseña incorrecto');
+  static async recoveryPassword(req, res) {
+    try {
+        const {
+            body: { email, newPassword },
+        } = req;
+        console.log(req.body, "req.body recovery controllers");
+        const user = await userService.getByEmail(email);
+        console.log(user, "user recovery controllers");
+        if (!user) {
+            return res.status(401).send('Email o contraseña incorrecto');
+        }
+
+        const oldPassword = user.password;
+
+        if (oldPassword === newPassword) {
+            return res.status(401).send('La nueva contraseña no puede ser igual a la anterior');
+        }
+
+        // Actualiza la contraseña
+        await userService.recoveryPassword(
+            { email },
+            { $set: { password: createHash(newPassword) } }
+        );
+
+        res.send('Contraseña actualizada con éxito');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Ha ocurrido un error al actualizar la contraseña');
     }
-
-    const isPasswordValid = await comparePassword(oldPassword, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).send('La contraseña antigua es incorrecta');
-    }
-
-    if (oldPassword === newPassword) {
-      return res
-        .status(401)
-        .send('La nueva contraseña no puede ser igual a la anterior');
-    }
-
-
-    // Actualiza la contraseña
-    await userModel.updateOne(
-      { email },
-      { $set: { password: createHash(newPassword) } }
-    );
-
-    res.send('Contraseña actualizada con éxito');
-  }
-
+}
+  
   static async updateRole(uid, newRole) {
     await userService.updateRole(uid, newRole);
   }

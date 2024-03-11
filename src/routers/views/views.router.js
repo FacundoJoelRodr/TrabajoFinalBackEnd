@@ -27,5 +27,10 @@ router.get('/logout', (req, res) => {
     res.render('recovery-password', {title: 'Recuperar Contraseña'})
 })
 
+router.get('/send-recovery-password', async (req,res)=>{
+
+  res.render('send', {title: 'Recuperar Contraseña'})
+})
+
 
 export default router
