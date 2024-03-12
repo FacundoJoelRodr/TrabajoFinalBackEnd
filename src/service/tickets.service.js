@@ -26,7 +26,6 @@ export default class ticketService {
   static async generateTicket(cid) {
     try {
       const cart = await CartController.getById(cid);
-      console.log(cart ,"cart");
       if (!cart) {
         throw new NotFoundException('Carrito no encontrado');
       }
@@ -44,7 +43,6 @@ export default class ticketService {
       };
 
       const ticket = await TicketsManager.create(ticketData);
-      console.log(ticket,"ticket ticket");
       const newCart = await CartController.create();
       for (const ticketProduct of cart.products) {
         const product = await ProductController.getById(ticketProduct.product);
@@ -70,7 +68,6 @@ export default class ticketService {
       await CartController.deleteById(cid);
 
       await UserController.getByCartAndUpdateCart(newCart._id, userCart._id);
-      console.log(ticket,"ticket ticket");
 
       return ticket._id;
     } catch (error) {

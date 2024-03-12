@@ -29,7 +29,6 @@ router.post('/login', async (req, res) => {
     return res.status(401).send('<script>alert("Correo o contraseña inválidos"); window.location="/api/login";</script>');
   }
   const token = tokenGenerator(user);
-  console.log(token, "token login");
   res.cookie('access_token', token, { maxAge: 60000, httpOnly: true });
 
   req.session.user = token;
@@ -96,14 +95,12 @@ router.get(
   }
 );
 router.post('/recovery-password', async (req, res, next) => {
-  console.log(req.query.token,"recovery");
   const token = req.query.token;
   try {
     if (!token) {
-      //res.redirect('/api/send-recovery-password');    
+      res.redirect('/api/send-recovery-password');    
       console.log("no hay token");
     }
-
     await UserController.recoveryPassword(req, res); // Pasamos res para manejar la respuesta
     res.redirect('/api/login');
   } catch (error) {

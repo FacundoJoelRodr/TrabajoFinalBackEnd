@@ -92,7 +92,6 @@ export const init = () => {
         if (!isPassValid) {
           return done(new Error('Email y contraseña invalidos!'));
         }
-        console.log(user._id, "user id login");
         await updateUserLastLogin(user._id);
         done(null, user);
       } catch (error) {

@@ -71,7 +71,6 @@ router.get("/users/:uid", async (req, res, next) => {
         params: { uid },
         body,
       } = req;
-      console.log(body, "body");
       await UserController.updateRole(uid, body);
       res.status(204).end();
     } catch (error) {

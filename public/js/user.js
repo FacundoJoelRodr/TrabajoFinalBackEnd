@@ -50,8 +50,7 @@
       const removeButtons = document.querySelectorAll('.remove-user');
       removeButtons.forEach((button) => {
         button.addEventListener('click', async (event) => {
-          const userId = event.target.dataset.userId;
-          console.log(userId,"userid");
+          const userId = event.target.dataset.userId;;
           await removeUser(userId);
         });
       });
@@ -62,9 +61,6 @@
           const userId = event.target.dataset.userId;
           const newRole = event.target.value;
           const newData = { role: newRole };
-          console.log(userId,"userid");
-          console.log(newData,"newData");
-          console.log(newRole,"newRole");
           await updateUser(userId, newData);
         });
       });

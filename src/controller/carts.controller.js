@@ -65,8 +65,6 @@ export default class CartController {
     try {
       const product = await ProductController.getById(pid);
       const user = await UserController.getByCart(cid);
-      console.log(product,"product");
-      console.log(user,"product");
       if (product.owner === user.email) {
         throw new Error('no puedes comprar tu mismo producto');    
       }

@@ -40,13 +40,7 @@ app.use(
   })
 );
 
-app.get('*', (req, res, next) => {
-  if (req.url !== '/api/login') {
-    res.redirect('/api/login');
-  } else {
-    next(); // Continúa con el siguiente middleware si ya estás en '/api/login'
-  }
-});
+
 
 const createAdminUser = async () => {
   try {
@@ -116,13 +110,30 @@ app.use('/api', emailRouter);
 app.use('/api', ticketRouter);
 app.use('/api', userRouter);
 */
+
+app.use((req, res, next) => {
+  const error = new Error('Página no encontrada'); // Crea un nuevo error
+  error.status = 404; // Establece el código de estado a 404
+  next(error); // Pasa el error al siguiente middleware
+});
+
+app.use((err, req, res, next) => {
+  if (err.status === 404 ) { // Verifica si es un error 404
+   res.redirect('/api/login'); // Redirige a la página deseada
+  } else {
+    const message = `Ha ocurrido un error desconocido: ${err.message}`;
+    console.error(message);    
+    res.redirect('/api/login')    
+  }
+});
+
 app.use((error, req, res, next) => {
   if (error instanceof Exception) {
     res
       .status(500)
       .json({ error: 'Ha ocurrido un error interno del servidor' });
   } else {
-    const message = `Ha ocurrido un error desconocido: ${error.message}`;
+    const message = `Ha ocurrido un error desconocido2: ${error.message}`;
     console.error(message);
     res.status(500).json({ status: 'error', message });
   }

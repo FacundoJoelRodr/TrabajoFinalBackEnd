@@ -26,7 +26,6 @@
 
   // Función para eliminar todo el carrito
   async function removeAllProductsFromCart(cart) {
-    console.log(cart,"cartremove");
     try {
       const response = await fetch(`/api/carts/${cart}`, {
         method: 'DELETE',
@@ -58,7 +57,6 @@
     removeQuantityButtons.forEach((button) => {
       button.addEventListener('click', function (event) {
         const productId = event.target.dataset.productId;
-        console.log(productId,"product");
         const quantity = event.target.parentElement.querySelector('.quantity-input').value;
 
         removeProductFromCart(cart, productId, quantity);

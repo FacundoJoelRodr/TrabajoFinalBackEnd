@@ -95,7 +95,6 @@ export default class ProductController {
       const newuser = await UserController.getById(decodedToken.id);
   
       const product = await productService.getById(pid);
-      console.log(product,"product");
       if (!product) {
         throw new Error("Producto no encontrado");
       }
